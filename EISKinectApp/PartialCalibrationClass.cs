@@ -14,8 +14,8 @@ namespace Microsoft.Samples.Kinect.ControlsBasics
     {
         private KinectSensor m_kinectSensor = null;
 
-        private List<Point> m_calibPoints = new List<Point>(); //2d calibration points
-        private List<SkeletonPoint> m_skeletonCalibPoints = new List<SkeletonPoint>(); //3d skeleton points
+        public List<Point> m_calibPoints = new List<Point>(); //2d calibration points
+        public List<SkeletonPoint> m_skeletonCalibPoints = new List<SkeletonPoint>(); //3d skeleton points
 
         private Matrix3D m_groundPlaneTransform; //step 2 transform
         private Emgu.CV.Matrix<double> m_transform; //step 3 transform
@@ -38,7 +38,7 @@ namespace Microsoft.Samples.Kinect.ControlsBasics
             Console.WriteLine($"HipCenter mapped to screen point: X={pt.X:F2}, Y={pt.Y:F2}");
         }
 
-        private void calibrate()
+        public void Calibrate()
         {
             if (m_skeletonCalibPoints.Count == m_calibPoints.Count)
             {
