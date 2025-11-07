@@ -2,12 +2,18 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Kinect Calibration" Height="600" Width="800">
-    <Grid>
-        <!-- Depth background -->
-        <Image x:Name="DepthImage" Stretch="Fill"/>
+    <Grid Background="Black">
+        <Viewbox Stretch="Uniform"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Center">
+            <Grid Width="640" Height="480">
+                <!-- Depth background -->
+                <Image x:Name="DepthImage" Stretch="Fill"/>
 
-        <!-- Canvas for drawing joints and debug overlays -->
-        <Canvas x:Name="KinectCanvas" IsHitTestVisible="False"/>
+                <!-- Canvas overlay (same size) -->
+                <Canvas x:Name="KinectCanvas" IsHitTestVisible="False"/>
+            </Grid>
+        </Viewbox>
 
         <!-- Overlay controls -->
         <StackPanel Orientation="Vertical"

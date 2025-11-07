@@ -57,22 +57,37 @@ namespace EISKinectApp
 
                 frame.CopyDepthImagePixelDataTo(_depthPixels);
 
-                byte[] pixels = new byte[_depthPixels.Length];
+                byte[] colorPixels = new byte[_depthPixels.Length * 4]; // BGRA
 
-                // Convert depth to grayscale (simple linear mapping)
                 for (int i = 0; i < _depthPixels.Length; i++)
                 {
                     int depth = _depthPixels[i].Depth;
-                    byte intensity = (byte)(255 - (depth / 8) % 255);
-                    pixels[i] = intensity;
+
+                    // Clamp and normalize depth (0–4096 → 0–1)
+                    double normalized = Math.Min(1.0, Math.Max(0, (depth - 500) / 3500.0));
+
+                    // Map to blue intensity
+                    byte blue = (byte)(255 * (1 - normalized));  // Near = bright blue, far = dark
+                    byte red = 0;
+                    byte green = (byte)(blue / 4); // subtle teal tint
+
+                    int idx = i * 4;
+                    colorPixels[idx + 0] = blue;   // Blue
+                    colorPixels[idx + 1] = green;  // Green
+                    colorPixels[idx + 2] = red;    // Red
+                    colorPixels[idx + 3] = 255;    // Alpha
                 }
+
+                _depthBitmap = new WriteableBitmap(640, 480, 96.0, 96.0, PixelFormats.Bgra32, null);
+                DepthImage.Source = _depthBitmap;
 
                 _depthBitmap.WritePixels(
                     new Int32Rect(0, 0, frame.Width, frame.Height),
-                    pixels,
-                    frame.Width,
+                    colorPixels,
+                    frame.Width * 4,
                     0
                 );
+
             }
         }
 
