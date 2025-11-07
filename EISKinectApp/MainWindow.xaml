@@ -2,43 +2,46 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Kinect Calibration" Height="600" Width="800">
-    <Grid Background="Black">
-        <Viewbox Stretch="Uniform"
-                 HorizontalAlignment="Center"
-                 VerticalAlignment="Center">
-            <Grid Width="640" Height="480">
-                <!-- Depth background -->
-                <Image x:Name="DepthImage" Stretch="Fill"/>
+    <Grid x:Name="MainGrid">
+        <Grid x:Name="CalibrationGrid" Background="Black">
+            <Viewbox Stretch="Uniform"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Center">
+                <Grid Width="640" Height="480">
+                    <!-- Depth background -->
+                    <Image x:Name="DepthImage" Stretch="Fill" />
 
-                <!-- Canvas overlay (same size) -->
-                <Canvas x:Name="KinectCanvas" IsHitTestVisible="False"/>
-            </Grid>
-        </Viewbox>
+                    <!-- Canvas overlay (same size) -->
+                    <Canvas x:Name="KinectCanvas" IsHitTestVisible="False" />
+                </Grid>
+            </Viewbox>
 
-        <!-- Overlay controls -->
-        <StackPanel Orientation="Vertical"
-                    VerticalAlignment="Bottom"
-                    HorizontalAlignment="Center"
-                    Margin="0,20,0,20">
-            <TextBlock x:Name="StatusText"
-                       Text="Stand in corner 1 and press Capture"
-                       FontSize="20"
-                       Foreground="White"
-                       TextAlignment="Center"
-                       Margin="0,0,0,10"/>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button x:Name="CaptureButton"
-                        Content="Capture Point"
-                        Width="150"
-                        Height="40"
-                        Click="CaptureButton_Click"/>
-                <Button x:Name="CalibrateButton"
-                        Content="Calibrate"
-                        Width="150"
-                        Height="40"
-                        Click="CalibrateButton_Click"
-                        IsEnabled="False"/>
+            <!-- Overlay controls -->
+            <StackPanel Orientation="Vertical"
+                        VerticalAlignment="Bottom"
+                        HorizontalAlignment="Center"
+                        Margin="0,20,0,20">
+                <TextBlock x:Name="StatusText"
+                           Text="Stand in corner 1 and press Capture"
+                           FontSize="20"
+                           Foreground="White"
+                           TextAlignment="Center"
+                           Margin="0,0,0,10" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button x:Name="CaptureButton"
+                            Content="Capture Point"
+                            Width="150"
+                            Height="40"
+                            Click="CaptureButton_Click" />
+                    <Button x:Name="CalibrateButton"
+                            Content="Calibrate"
+                            Width="150"
+                            Height="40"
+                            Click="CalibrateButton_Click"
+                            IsEnabled="False" />
+                </StackPanel>
             </StackPanel>
-        </StackPanel>
+        </Grid>
+        <Canvas x:Name="TrackingCanvas" Background="Black" Visibility="Collapsed" />
     </Grid>
 </Window>

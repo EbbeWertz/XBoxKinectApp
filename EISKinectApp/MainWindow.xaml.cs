@@ -18,6 +18,8 @@ namespace EISKinectApp
         private int _currentCorner = 0;
         private WriteableBitmap _depthBitmap;
         private DepthImagePixel[] _depthPixels;
+        private System.Windows.Threading.DispatcherTimer _trackingTimer;
+
 
         public MainWindow()
         {
@@ -67,15 +69,15 @@ namespace EISKinectApp
                     double normalized = Math.Min(1.0, Math.Max(0, (depth - 500) / 3500.0));
 
                     // Map to blue intensity
-                    byte blue = (byte)(255 * (1 - normalized));  // Near = bright blue, far = dark
+                    byte blue = (byte)(255 * (1 - normalized)); // Near = bright blue, far = dark
                     byte red = 0;
                     byte green = (byte)(blue / 4); // subtle teal tint
 
                     int idx = i * 4;
-                    colorPixels[idx + 0] = blue;   // Blue
-                    colorPixels[idx + 1] = green;  // Green
-                    colorPixels[idx + 2] = red;    // Red
-                    colorPixels[idx + 3] = 255;    // Alpha
+                    colorPixels[idx + 0] = blue; // Blue
+                    colorPixels[idx + 1] = green; // Green
+                    colorPixels[idx + 2] = red; // Red
+                    colorPixels[idx + 3] = 255; // Alpha
                 }
 
                 _depthBitmap = new WriteableBitmap(640, 480, 96.0, 96.0, PixelFormats.Bgra32, null);
@@ -87,7 +89,6 @@ namespace EISKinectApp
                     frame.Width * 4,
                     0
                 );
-
             }
         }
 
@@ -110,6 +111,7 @@ namespace EISKinectApp
         {
             KinectCanvas.Children.Clear();
 
+            // 1️⃣ Draw skeleton if available
             if (_lastSkeleton != null)
             {
                 foreach (Joint joint in _lastSkeleton.Joints)
@@ -132,7 +134,7 @@ namespace EISKinectApp
                     }
                 }
 
-                // Draw hip center larger (red)
+                // HipCenter
                 Joint hip = _lastSkeleton.Joints[JointType.HipCenter];
                 DepthImagePoint hipPoint = _sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(
                     hip.Position, DepthImageFormat.Resolution640x480Fps30);
@@ -148,24 +150,85 @@ namespace EISKinectApp
                 KinectCanvas.Children.Add(hipMarker);
             }
 
-            // Draw calibration points if captured
-            for (int i = 0; i < _calibration.m_skeletonCalibPoints.Count; i++)
+            // 2️⃣ Draw calibration corners
+            Point[] screenCorners =
             {
-                SkeletonPoint sp = _calibration.m_skeletonCalibPoints[i];
-                DepthImagePoint pt = _sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(
-                    sp, DepthImageFormat.Resolution640x480Fps30);
+                new Point(50, 50), // top-left
+                new Point(590, 50), // top-right
+                new Point(590, 430), // bottom-right
+                new Point(50, 430) // bottom-left
+            };
 
+            for (int i = 0; i < screenCorners.Length; i++)
+            {
                 Ellipse cornerMarker = new Ellipse
                 {
-                    Width = 12,
-                    Height = 12,
-                    Stroke = Brushes.Yellow,
-                    StrokeThickness = 2
+                    Width = 20,
+                    Height = 20,
+                    StrokeThickness = 3,
+                    Stroke = i == _currentCorner ? Brushes.Yellow : Brushes.Gray,
+                    Fill = i < _calibration.m_skeletonCalibPoints.Count ? Brushes.Green : Brushes.Transparent
                 };
-                Canvas.SetLeft(cornerMarker, pt.X - 6);
-                Canvas.SetTop(cornerMarker, pt.Y - 6);
+                Canvas.SetLeft(cornerMarker, screenCorners[i].X - 10);
+                Canvas.SetTop(cornerMarker, screenCorners[i].Y - 10);
                 KinectCanvas.Children.Add(cornerMarker);
+
+                // Optional label
+                TextBlock label = new TextBlock
+                {
+                    Text = $"Corner {i + 1}",
+                    Foreground = Brushes.White,
+                    FontWeight = i == _currentCorner ? FontWeights.Bold : FontWeights.Normal
+                };
+                Canvas.SetLeft(label, screenCorners[i].X - 15);
+                Canvas.SetTop(label, screenCorners[i].Y - 30);
+                KinectCanvas.Children.Add(label);
             }
+        }
+
+        private void StartTrackingView()
+        {
+            // Hide calibration UI, show tracking canvas
+            CalibrationGrid.Visibility = Visibility.Collapsed;
+            TrackingCanvas.Visibility = Visibility.Visible;
+
+            _trackingTimer = new System.Windows.Threading.DispatcherTimer();
+            _trackingTimer.Interval = TimeSpan.FromMilliseconds(33); // ~30 FPS
+            _trackingTimer.Tick += TrackingTimer_Tick;
+            _trackingTimer.Start();
+        }
+
+        private void TrackingTimer_Tick(object sender, EventArgs e)
+        {
+            if (_lastSkeleton == null) return;
+
+            // Get 2D projected position
+            Point p2D = _calibration.kinectToProjectionPoint(_lastSkeleton.Joints[JointType.HipCenter].Position);
+
+            TrackingCanvas.Children.Clear();
+
+            // Draw a dot for player
+            Ellipse playerDot = new Ellipse
+            {
+                Width = 20,
+                Height = 20,
+                Fill = Brushes.Red
+            };
+            Canvas.SetLeft(playerDot, p2D.X - 10);
+            Canvas.SetTop(playerDot, p2D.Y - 10);
+            TrackingCanvas.Children.Add(playerDot);
+
+            // Optional: draw borders
+            Rectangle border = new Rectangle
+            {
+                Width = 640,
+                Height = 480,
+                Stroke = Brushes.White,
+                StrokeThickness = 2
+            };
+            Canvas.SetLeft(border, 0);
+            Canvas.SetTop(border, 0);
+            TrackingCanvas.Children.Add(border);
         }
 
         // CAPTURE
@@ -192,7 +255,8 @@ namespace EISKinectApp
             _currentCorner++;
             if (_currentCorner < 4)
             {
-                StatusText.Text = $"Captured corner {_currentCorner}. Now stand in corner {_currentCorner + 1} and press Capture.";
+                StatusText.Text =
+                    $"Captured corner {_currentCorner}. Now stand in corner {_currentCorner + 1} and press Capture.";
             }
             else
             {
@@ -206,7 +270,9 @@ namespace EISKinectApp
         private void CalibrateButton_Click(object sender, RoutedEventArgs e)
         {
             _calibration.Calibrate();
-            StatusText.Text = "Calibration complete!";
+            StatusText.Text = "Calibration comp" +
+                              "lete! Showing 2D player view...";
+            StartTrackingView();
         }
 
         protected override void OnClosed(EventArgs e)
