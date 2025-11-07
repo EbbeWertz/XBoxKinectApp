@@ -30,6 +30,11 @@ namespace EISKinectApp
 
         // Tracking view
         private System.Windows.Threading.DispatcherTimer _trackingTimer;
+        
+        // Voor gesture tracking
+        private bool _gestureActive = false;
+        private const JointType _gestureJoint = JointType.HandRight;
+
 
         public MainWindow()
         {
@@ -64,6 +69,59 @@ namespace EISKinectApp
             _sensor.Start();
             _calibration = new PartialCalibrationClass(_sensor);
         }
+        
+        private void CheckGestureForCapture()
+        {
+            if (_lastSkeleton == null || _currentCorner >= 4) return;
+
+            Joint hand = _lastSkeleton.Joints[_gestureJoint];
+            Joint head = _lastSkeleton.Joints[JointType.Head];
+
+            // Gesture: hand above head
+            bool handAboveHead = hand.Position.Y > head.Position.Y;
+
+            if (handAboveHead && !_gestureActive)
+            {
+                _gestureActive = true;
+                CaptureCorner();
+            }
+            else if (!handAboveHead)
+            {
+                _gestureActive = false; // reset when hand goes down
+            }
+        }
+        
+        private void CaptureCorner()
+        {
+            if (_lastSkeleton == null) return;
+
+            // Capture skeleton point for this corner
+            SkeletonPoint sp = _lastSkeleton.Joints[JointType.HipCenter].Position;
+            _calibration.m_skeletonCalibPoints.Add(sp);
+
+            // Map to screen corner
+            Point[] screenCorners = { new Point(0, 0), new Point(640, 0), new Point(640, 480), new Point(0, 480) };
+            _calibration.m_calibPoints.Add(screenCorners[_currentCorner]);
+
+            _currentCorner++;
+
+            if (_currentCorner < 4)
+            {
+                StatusText.Text = $"Captured corner {_currentCorner}. Now stand in corner {_currentCorner + 1} and raise your hand or press Capture.";
+            }
+            else
+            {
+                // All corners captured — automatically calibrate
+                StatusText.Text = "All corners captured — calibrating now...";
+                CaptureButton.IsEnabled = false; // optional, can hide button
+                _calibration.Calibrate();
+                StatusText.Text = "Calibration complete! Showing 2D player view...";
+                StartTrackingView();
+            }
+        }
+
+
+
 
         private void InitSkeletonShapes()
         {
@@ -158,6 +216,7 @@ namespace EISKinectApp
 
                 _lastSkeleton = skeletons.FirstOrDefault(s => s.TrackingState == SkeletonTrackingState.Tracked);
                 UpdateDebugOverlays();
+                CheckGestureForCapture();
             }
         }
 
@@ -225,29 +284,30 @@ namespace EISKinectApp
         // CAPTURE
         private void CaptureButton_Click(object sender, RoutedEventArgs e)
         {
-            if (_lastSkeleton == null)
-            {
-                StatusText.Text = "No skeleton detected — please step in view.";
-                return;
-            }
-
-            SkeletonPoint sp = _lastSkeleton.Joints[JointType.HipCenter].Position;
-            _calibration.m_skeletonCalibPoints.Add(sp);
-
-            Point[] screenCorners = { new Point(0, 0), new Point(640, 0), new Point(640, 480), new Point(0, 480) };
-            _calibration.m_calibPoints.Add(screenCorners[_currentCorner]);
-
-            _currentCorner++;
-            if (_currentCorner < 4)
-            {
-                StatusText.Text = $"Captured corner {_currentCorner}. Now stand in corner {_currentCorner + 1} and press Capture.";
-            }
-            else
-            {
-                StatusText.Text = "All corners captured — click Calibrate.";
-                CaptureButton.IsEnabled = false;
-                CalibrateButton.IsEnabled = true;
-            }
+            CaptureCorner();
+            // if (_lastSkeleton == null)
+            // {
+            //     StatusText.Text = "No skeleton detected — please step in view.";
+            //     return;
+            // }
+            //
+            // SkeletonPoint sp = _lastSkeleton.Joints[JointType.HipCenter].Position;
+            // _calibration.m_skeletonCalibPoints.Add(sp);
+            //
+            // Point[] screenCorners = { new Point(0, 0), new Point(640, 0), new Point(640, 480), new Point(0, 480) };
+            // _calibration.m_calibPoints.Add(screenCorners[_currentCorner]);
+            //
+            // _currentCorner++;
+            // if (_currentCorner < 4)
+            // {
+            //     StatusText.Text = $"Captured corner {_currentCorner}. Now stand in corner {_currentCorner + 1} and press Capture.";
+            // }
+            // else
+            // {
+            //     StatusText.Text = "All corners captured — click Calibrate.";
+            //     CaptureButton.IsEnabled = false;
+            //     CalibrateButton.IsEnabled = true;
+            // }
         }
 
         // CALIBRATE

@@ -22,24 +22,16 @@
                         HorizontalAlignment="Center"
                         Margin="0,20,0,20">
                 <TextBlock x:Name="StatusText"
-                           Text="Stand in corner 1 and press Capture"
+                           Text="Stand in corner 1 and press Capture or raise your hands above your head to capture."
                            FontSize="20"
                            Foreground="White"
                            TextAlignment="Center"
                            Margin="0,0,0,10" />
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button x:Name="CaptureButton"
-                            Content="Capture Point"
-                            Width="150"
-                            Height="40"
-                            Click="CaptureButton_Click" />
-                    <Button x:Name="CalibrateButton"
-                            Content="Calibrate"
-                            Width="150"
-                            Height="40"
-                            Click="CalibrateButton_Click"
-                            IsEnabled="False" />
-                </StackPanel>
+                <Button x:Name="CaptureButton"
+                        Content="Capture Point"
+                        Width="150"
+                        Height="40"
+                        Click="CaptureButton_Click" />
             </StackPanel>
         </Grid>
         <Canvas x:Name="TrackingCanvas" Background="Black" Visibility="Collapsed" />
