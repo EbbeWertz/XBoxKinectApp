@@ -1,0 +1,111 @@
+﻿# =========================
+# Visual Studio & .NET Build Files
+# =========================
+bin/
+obj/
+[Bb]uild/
+[Ll]og/
+[Tt]emp/
+*.user
+*.suo
+*.cache
+*.pdb
+*.obj
+*.exe
+*.dll
+*.appx
+*.appxrecipe
+*.appxbundle
+*.log
+*.tmp
+*.tlog
+*.vspscc
+*.vssscc
+*.dbmdl
+*.dbproj.schemaview
+
+# =========================
+# Visual Studio Files
+# =========================
+.vs/
+*.ncb
+*.aps
+*.opensdf
+*.sdf
+*.VC.db
+*.VC.VC.opendb
+
+# =========================
+# NuGet
+# =========================
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+*.nuspec
+project.lock.json
+project.fragment.lock.json
+
+# =========================
+# Build Results
+# =========================
+TestResult*/
+TestResults/
+[Bb]in/
+[Oo]bj/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+*.build.csdef
+*.publish.xml
+
+# =========================
+# User-specific files
+# =========================
+*.rsuser
+*.userosscache
+*.suo
+*.userprefs
+*.csproj.user
+*.DotSettings.user
+*.vsconfig
+
+# =========================
+# Rider / JetBrains
+# =========================
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# =========================
+# Windows
+# =========================
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# =========================
+# VS Code
+# =========================
+.vscode/
+.history/
+*.code-workspace
+
+# =========================
+# WPF-specific files
+# =========================
+# (You typically *keep* .xaml and .xaml.cs — they define your UI)
+*.g.cs
+*.g.i.cs
+
+# =========================
+# EmguCV & Kinect build outputs (optional)
+# =========================
+Emgu.CV.World.xml
+Emgu.CV.runtime/
+Emgu.CV.UI.xml
+Microsoft.Kinect.dll
+Microsoft.Kinect.xml
