@@ -1,0 +1,21 @@
+﻿<Window x:Class="EISKinectApp.view.CallibrationWindowFloor"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Floor Projection"
+        WindowState="Maximized"
+        Background="Black"
+        ResizeMode="CanResize"
+        WindowStartupLocation="Manual">
+
+    <Grid x:Name="ProjectionGrid">
+        <Viewbox x:Name="ProjectionBox" Stretch="Uniform">
+            <Canvas x:Name="ProjectionCanvas" Width="640" Height="480" Background="Transparent">
+                <!-- Outer corner hints -->
+                <Ellipse x:Name="Corner1" Width="50" Height="50" Stroke="Gray" StrokeThickness="5" Fill="Transparent"/>
+                <Ellipse x:Name="Corner2" Width="50" Height="50" Stroke="Gray" StrokeThickness="5" Fill="Transparent"/>
+                <Ellipse x:Name="Corner3" Width="50" Height="50" Stroke="Gray" StrokeThickness="5" Fill="Transparent"/>
+                <Ellipse x:Name="Corner4" Width="50" Height="50" Stroke="Gray" StrokeThickness="5" Fill="Transparent"/>
+            </Canvas>
+        </Viewbox>
+    </Grid>
+</Window>

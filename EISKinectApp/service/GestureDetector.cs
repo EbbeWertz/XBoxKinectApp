@@ -1,20 +1,16 @@
 ﻿using Microsoft.Kinect;
 
-namespace EISKinectApp.service
-{
-    public class GestureDetector
-    {
+namespace EISKinectApp.service {
+    public class GestureDetector {
         private bool _gestureActive = false;
         private int _holdFrames = 0;
         private readonly int _requiredHoldFrames;
 
-        public GestureDetector(int requiredHoldFrames = 5)
-        {
+        public GestureDetector(int requiredHoldFrames = 5) {
             _requiredHoldFrames = requiredHoldFrames;
         }
 
-        public bool CheckCaptureGesture(Skeleton skeleton)
-        {
+        public bool CheckCaptureGesture(Skeleton skeleton) {
             if (skeleton == null) return false;
 
             Joint head = skeleton.Joints[JointType.Head];
@@ -31,23 +27,19 @@ namespace EISKinectApp.service
             bool bothHandsAbove = handRight.Position.Y > triggerY && handLeft.Position.Y > triggerY;
             bool bothHandsBelow = handRight.Position.Y < resetY && handLeft.Position.Y < resetY;
 
-            if (bothHandsAbove && !_gestureActive)
-            {
+            if (bothHandsAbove && !_gestureActive) {
                 _holdFrames++;
-                if (_holdFrames > _requiredHoldFrames)
-                {
+                if (_holdFrames > _requiredHoldFrames) {
                     _gestureActive = true;
                     _holdFrames = 0;
                     return true;
                 }
             }
-            else if (bothHandsBelow)
-            {
+            else if (bothHandsBelow) {
                 _gestureActive = false;
                 _holdFrames = 0;
             }
-            else
-            {
+            else {
                 _holdFrames = 0;
             }
 

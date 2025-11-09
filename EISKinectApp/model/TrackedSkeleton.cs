@@ -1,19 +1,15 @@
 ﻿using Microsoft.Kinect;
 
-namespace EISKinectApp.model
-{
-    public class TrackedSkeleton
-    {
-        public Skeleton Skeleton { get; private set; }
+namespace EISKinectApp.model {
+    public class TrackedSkeleton {
+        public Skeleton Skeleton { get; }
         public bool IsTracked => Skeleton?.TrackingState == SkeletonTrackingState.Tracked;
 
-        public TrackedSkeleton(Skeleton skeleton)
-        {
+        public TrackedSkeleton(Skeleton skeleton) {
             Skeleton = skeleton;
         }
 
-        public SkeletonPoint GetJointPosition(JointType jointType)
-        {
+        public SkeletonPoint GetJointPosition(JointType jointType) {
             return Skeleton?.Joints[jointType].Position ?? new SkeletonPoint();
         }
     }

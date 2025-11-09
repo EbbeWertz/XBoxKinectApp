@@ -1,0 +1,10 @@
+﻿<UserControl x:Class="EISKinectApp.view.DepthCameraView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Width="640" Height="480">
+    <Border Background="#111" CornerRadius="10" BorderBrush="#555" BorderThickness="2" >
+        <Grid>
+            <Image x:Name="DepthImage" Stretch="Fill" />
+        </Grid>
+    </Border>
+</UserControl>

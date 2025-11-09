@@ -1,0 +1,96 @@
+<Window x:Class="EISKinectApp.view.CalibrationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:view="clr-namespace:EISKinectApp.view"
+        Title="Kinect Calibration"
+        Height="650" Width="850"
+        Background="#1e1e1e"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid>
+        <!-- Depth + Skeleton View -->
+        <Border Background="#111" CornerRadius="10" Margin="20" BorderBrush="#555" BorderThickness="2">
+            <Canvas  Width="640" Height="480">
+                <!-- Depth feed -->
+                <view:DepthCameraView x:Name="DepthView" />
+
+                <!-- Skeleton overlay -->
+                <view:SkeletonView x:Name="SkeletonOverlay" />
+
+                <!-- Corner hints -->
+                <Ellipse x:Name="Corner1" Width="20" Height="20" Stroke="Gray" StrokeThickness="3" Fill="Transparent"
+                         Canvas.Left="50" Canvas.Top="50"/>
+                <Ellipse x:Name="Corner2" Width="20" Height="20" Stroke="Gray" StrokeThickness="3" Fill="Transparent"
+                         Canvas.Left="590" Canvas.Top="50"/>
+                <Ellipse x:Name="Corner3" Width="20" Height="20" Stroke="Gray" StrokeThickness="3" Fill="Transparent"
+                         Canvas.Left="590" Canvas.Top="430"/>
+                <Ellipse x:Name="Corner4" Width="20" Height="20" Stroke="Gray" StrokeThickness="3" Fill="Transparent"
+                         Canvas.Left="50" Canvas.Top="430"/>
+            </Canvas>
+        </Border>
+
+        <!-- Bottom Controls -->
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,30">
+            <Border Background="#333" CornerRadius="10" Padding="15" Opacity="0.85">
+                <TextBlock x:Name="StatusText"
+                           Text="Stand in corner 1 and press Capture or raise your hands above your head to capture."
+                           FontSize="20"
+                           Foreground="White"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap"
+                           Width="600" />
+            </Border>
+
+            <Button x:Name="CaptureButton"
+                    Content="Capture Point"
+                    Width="180"
+                    Height="50"
+                    FontSize="18"
+                    Margin="0,15,0,0"
+                    Background="#ff6a00"
+                    Foreground="White"
+                    FontWeight="Bold"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Click="CaptureButton_Click">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border CornerRadius="8" Background="{TemplateBinding Background}">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+                        <Setter Property="RenderTransform">
+                            <Setter.Value>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#ff8124"/>
+                                <Setter Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="1.05" ScaleY="1.05"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#ff5000"/>
+                                <Setter Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.95" ScaleY="0.95"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </StackPanel>
+    </Grid>
+</Window>

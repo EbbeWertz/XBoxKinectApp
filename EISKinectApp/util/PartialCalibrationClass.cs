@@ -24,19 +24,6 @@ namespace Microsoft.Samples.Kinect.ControlsBasics
         {
             m_kinectSensor = sensor;
         }
-        
-        public void PrintMapping(Skeleton skeleton)
-        {
-            if (m_transform == null)
-            {
-                Console.WriteLine("Calibration not yet done.");
-                return;
-            }
-
-            var joint = skeleton.Joints[JointType.HipCenter];
-            Point pt = kinectToProjectionPoint(joint.Position);
-            Console.WriteLine($"HipCenter mapped to screen point: X={pt.X:F2}, Y={pt.Y:F2}");
-        }
 
         public void Calibrate()
         {
