@@ -70,34 +70,37 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Model\KinectWrapper\Calibration\PartialCalibrationClass.cs" />
+        <Compile Include="Model\KinectWrapper\Calibration\Util.cs" />
+        <Compile Include="Model\KinectWrapper\KinectCalibratedProjector.cs" />
+        <Compile Include="Model\KinectWrapper\KinectManager.cs" />
+        <Compile Include="Model\KinectWrapper\KinectSkeleton.cs" />
         <Compile Include="service\CallibrationService.cs" />
         <Compile Include="service\GestureDetector.cs" />
         <Compile Include="service\KinectService.cs" />
-        <Compile Include="util\PartialCalibrationClass.cs" />
-        <Compile Include="util\Util.cs" />
-        <Compile Include="model\CallibrationData.cs" />
-        <Compile Include="model\TrackedSkeleton.cs" />
-        <Compile Include="view\App.xaml.cs">
+        <Compile Include="Model\CallibrationData.cs" />
+        <Compile Include="Model\TrackedSkeleton.cs" />
+        <Compile Include="View\App.xaml.cs">
           <DependentUpon>App.xaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
-        <Compile Include="view\CalibrationWindow.xaml.cs">
+        <Compile Include="View\CalibrationWindow.xaml.cs">
           <DependentUpon>CalibrationWindow.xaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
-        <Compile Include="view\CallibrationWindowFloor.xaml.cs">
+        <Compile Include="View\CallibrationWindowFloor.xaml.cs">
           <DependentUpon>CallibrationWindowFloor.xaml</DependentUpon>
         </Compile>
-        <Compile Include="view\DepthCameraView.xaml.cs">
+        <Compile Include="View\DepthCameraView.xaml.cs">
           <DependentUpon>DepthCameraView.xaml</DependentUpon>
         </Compile>
-        <Compile Include="view\GameWindow.xaml.cs">
+        <Compile Include="View\GameWindow.xaml.cs">
           <DependentUpon>GameWindow.xaml</DependentUpon>
         </Compile>
-        <Compile Include="view\GameWindowFloor.xaml.cs">
+        <Compile Include="View\GameWindowFloor.xaml.cs">
           <DependentUpon>GameWindowFloor.xaml</DependentUpon>
         </Compile>
-        <Compile Include="view\SkeletonView.xaml.cs">
+        <Compile Include="View\SkeletonView.xaml.cs">
           <DependentUpon>SkeletonView.xaml</DependentUpon>
         </Compile>
     </ItemGroup>
@@ -121,21 +124,25 @@
         <None Include="packages.config" />
     </ItemGroup>
     <ItemGroup>
-      <ApplicationDefinition Include="view\App.xaml">
+      <ApplicationDefinition Include="View\App.xaml">
         <Generator>MSBuild:Compile</Generator>
         <SubType>Designer</SubType>
       </ApplicationDefinition>
     </ItemGroup>
     <ItemGroup>
-      <Page Include="view\CalibrationWindow.xaml">
+      <Page Include="View\CalibrationWindow.xaml">
         <Generator>MSBuild:Compile</Generator>
         <SubType>Designer</SubType>
       </Page>
-      <Page Include="view\CallibrationWindowFloor.xaml" />
-      <Page Include="view\DepthCameraView.xaml" />
-      <Page Include="view\GameWindow.xaml" />
-      <Page Include="view\GameWindowFloor.xaml" />
-      <Page Include="view\SkeletonView.xaml" />
+      <Page Include="View\CallibrationWindowFloor.xaml" />
+      <Page Include="View\DepthCameraView.xaml" />
+      <Page Include="View\GameWindow.xaml" />
+      <Page Include="View\GameWindowFloor.xaml" />
+      <Page Include="View\SkeletonView.xaml" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Model\Game\" />
+      <Folder Include="util\" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
     <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

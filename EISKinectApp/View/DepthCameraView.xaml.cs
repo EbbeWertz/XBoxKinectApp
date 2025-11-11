@@ -1,7 +1,5 @@
-﻿using System.Windows.Controls;
-using System.Windows.Media;
+﻿using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Microsoft.Kinect;
 
 namespace EISKinectApp.view
 {
@@ -19,19 +17,18 @@ namespace EISKinectApp.view
             _colorPixels = new byte[640 * 480 * 4];
         }
 
-        public void UpdateDepth(DepthImagePixel[] depthPixels)
+        public void UpdateDepth(int[] depthPixels, int maxValue)
         {
             if (depthPixels == null || depthPixels.Length == 0) return;
 
             for (int i = 0; i < depthPixels.Length; i++)
             {
-                int depth = depthPixels[i].Depth;
-                double normalized = System.Math.Min(1.0, System.Math.Max(0, (depth - 500) / 3500.0));
-                byte red = (byte)(255 * normalized);
-                byte green = 0;
-                byte blue = (byte)(255 * (1 - normalized));
+                var normalizedDepth = (double)depthPixels[i] / maxValue;
+                var red = (byte)(255 * normalizedDepth);
+                const byte green = 0;
+                var blue = (byte)(255 * (1 - normalizedDepth));
 
-                int idx = i * 4;
+                var idx = i * 4;
                 _colorPixels[idx + 0] = blue;
                 _colorPixels[idx + 1] = green;
                 _colorPixels[idx + 2] = red;
