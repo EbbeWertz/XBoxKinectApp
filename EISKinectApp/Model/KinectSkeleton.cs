@@ -19,6 +19,10 @@ namespace EISKinectApp.Model
             _kinectCalibrator = kinectCalibrator;
         }
 
+        public SkeletonPoint GetRaw(JointType joint) {
+            return _skeleton.Joints[joint].Position;
+        }
+
         public Point3D Get3D(JointType joint)
         {
             var j = _skeleton.Joints[joint];

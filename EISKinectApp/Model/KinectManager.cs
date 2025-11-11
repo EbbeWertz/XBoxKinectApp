@@ -10,38 +10,38 @@ namespace EISKinectApp.Model {
         public static KinectManager Instance => _instance.Value;
 
         // resources:
-        private readonly KinectSensor _sensor;
+
+        public KinectSensor Sensor { get; }
+
         private KinectCalibrator _calibrator;
 
         // events:
         public event Action<KinectSkeleton> SkeletonReady;
-        public event Action<byte[]> DepthFrameReady;
+        public event Action<DepthImagePixel[]> DepthFrameReady;
 
         // buffer voor depth camera
-        private readonly byte[] _depthPixels;
         private readonly DepthImagePixel[] _depthBuffer;
 
         private KinectManager() {
-            _sensor = KinectSensor.KinectSensors.FirstOrDefault(s => s.Status == KinectStatus.Connected)
+            Sensor = KinectSensor.KinectSensors.FirstOrDefault(s => s.Status == KinectStatus.Connected)
                       ?? throw new InvalidOperationException("No Kinect connected!");
 
-            _sensor.SkeletonStream.Enable();
-            _sensor.DepthStream.Enable(DepthImageFormat.Resolution640x480Fps30);
-            _depthBuffer = new DepthImagePixel[_sensor.DepthStream.FramePixelDataLength];
-            _depthPixels = new byte[_sensor.DepthStream.FramePixelDataLength * 4];
+            Sensor.SkeletonStream.Enable();
+            Sensor.DepthStream.Enable(DepthImageFormat.Resolution640x480Fps30);
+            _depthBuffer = new DepthImagePixel[Sensor.DepthStream.FramePixelDataLength];
 
-            _sensor.SkeletonFrameReady += OnSkeletonFrameReady;
-            _sensor.DepthFrameReady += OnDepthFrameReady;
+            Sensor.SkeletonFrameReady += OnSkeletonFrameReady;
+            Sensor.DepthFrameReady += OnDepthFrameReady;
         }
 
         public void Start() {
-            if (!_sensor.IsRunning)
-                _sensor.Start();
+            if (!Sensor.IsRunning)
+                Sensor.Start();
         }
 
         public void Stop() {
-            if (_sensor.IsRunning)
-                _sensor.Stop();
+            if (Sensor.IsRunning)
+                Sensor.Stop();
         }
 
         public void SetCalibration(KinectCalibrator calibrator) => _calibrator = calibrator;
@@ -61,8 +61,7 @@ namespace EISKinectApp.Model {
                     return;
 
                 var wrapped = new KinectSkeleton(tracked, _calibrator);
-                if (SkeletonReady != null)
-                    SkeletonReady(wrapped);
+                SkeletonReady?.Invoke(wrapped);
             }
         }
 
@@ -72,22 +71,8 @@ namespace EISKinectApp.Model {
             {
                 if (frame == null)
                     return;
-
                 frame.CopyDepthImagePixelDataTo(_depthBuffer);
-
-                // Convert depth pixels to grayscale byte array (for visualization)
-                int colorIndex = 0;
-                foreach (var depth in _depthBuffer)
-                {
-                    byte intensity = (byte)(255 - (depth.Depth / 8));
-                    _depthPixels[colorIndex++] = intensity;
-                    _depthPixels[colorIndex++] = intensity;
-                    _depthPixels[colorIndex++] = intensity;
-                    _depthPixels[colorIndex++] = 255;
-                }
-
-                if (DepthFrameReady != null)
-                    DepthFrameReady(_depthPixels);
+                DepthFrameReady?.Invoke(_depthBuffer);
             }
         }
     }

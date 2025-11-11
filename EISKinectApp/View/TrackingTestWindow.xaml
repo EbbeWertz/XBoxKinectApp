@@ -1,6 +1,0 @@
-﻿<Window x:Class="EISKinectApp.view.TrackingTestWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Tracking View" Height="600" Width="800" Background="Black">
-    <Canvas x:Name="TrackingCanvas" Background="Black"/>
-</Window>

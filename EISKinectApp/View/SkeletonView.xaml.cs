@@ -1,42 +1,40 @@
-﻿using System.Windows.Controls;
+﻿using System.Collections.Generic;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
 using Microsoft.Kinect;
-using System.Collections.Generic;
-using System.Windows;
+using EISKinectApp.Model;
 
-namespace EISKinectApp.view
+namespace EISKinectApp.View
 {
     public partial class SkeletonView
     {
         private readonly Ellipse[] _jointDots;
         private readonly Line[] _boneLines;
 
-        private readonly JointType[][] _bones = new JointType[][]
-        {
-            new JointType[]{ JointType.Head, JointType.ShoulderCenter },
-            new JointType[]{ JointType.ShoulderCenter, JointType.ShoulderLeft },
-            new JointType[]{ JointType.ShoulderCenter, JointType.ShoulderRight },
-            new JointType[]{ JointType.ShoulderCenter, JointType.Spine },
-            new JointType[]{ JointType.Spine, JointType.HipCenter },
-            new JointType[]{ JointType.HipCenter, JointType.HipLeft },
-            new JointType[]{ JointType.HipCenter, JointType.HipRight },
-
-            new JointType[]{ JointType.ShoulderLeft, JointType.ElbowLeft },
-            new JointType[]{ JointType.ElbowLeft, JointType.WristLeft },
-            new JointType[]{ JointType.WristLeft, JointType.HandLeft },
-
-            new JointType[]{ JointType.ShoulderRight, JointType.ElbowRight },
-            new JointType[]{ JointType.ElbowRight, JointType.WristRight },
-            new JointType[]{ JointType.WristRight, JointType.HandRight },
-
-            new JointType[]{ JointType.HipLeft, JointType.KneeLeft },
-            new JointType[]{ JointType.KneeLeft, JointType.AnkleLeft },
-            new JointType[]{ JointType.AnkleLeft, JointType.FootLeft },
-
-            new JointType[]{ JointType.HipRight, JointType.KneeRight },
-            new JointType[]{ JointType.KneeRight, JointType.AnkleRight },
-            new JointType[]{ JointType.AnkleRight, JointType.FootRight },
+        // Define the skeleton structure
+        private readonly JointType[][] _bones = {
+            new[]{ JointType.Head, JointType.ShoulderCenter },
+            new[]{ JointType.ShoulderCenter, JointType.ShoulderLeft },
+            new[]{ JointType.ShoulderCenter, JointType.ShoulderRight },
+            new[]{ JointType.ShoulderCenter, JointType.Spine },
+            new []{ JointType.Spine, JointType.HipCenter },
+            new []{ JointType.HipCenter, JointType.HipLeft },
+            new []{ JointType.HipCenter, JointType.HipRight },
+            new []{ JointType.ShoulderLeft, JointType.ElbowLeft },
+            new []{ JointType.ElbowLeft, JointType.WristLeft },
+            new []{ JointType.WristLeft, JointType.HandLeft },
+            new []{ JointType.ShoulderRight, JointType.ElbowRight },
+            new []{ JointType.ElbowRight, JointType.WristRight },
+            new []{ JointType.WristRight, JointType.HandRight },
+            new []{ JointType.HipLeft, JointType.KneeLeft },
+            new []{ JointType.KneeLeft, JointType.AnkleLeft },
+            new []{ JointType.AnkleLeft, JointType.FootLeft },
+            new []{ JointType.HipRight, JointType.KneeRight },
+            new []{ JointType.KneeRight, JointType.AnkleRight },
+            new []{ JointType.AnkleRight, JointType.FootRight },
         };
 
         public SkeletonView()
@@ -70,27 +68,31 @@ namespace EISKinectApp.view
             }
         }
 
-        public void UpdateSkeleton(Skeleton skeleton, CoordinateMapper mapper)
+        /// <summary>
+        /// Draws a skeleton from a KinectSkeleton object (which includes calibration)
+        /// </summary>
+        public void UpdateSkeleton(KinectSkeleton skeleton)
         {
-            if (skeleton == null) return;
+            if (skeleton == null || !skeleton.IsTracked)
+                return;
 
-            // Map joints to depth points
-            Dictionary<JointType, System.Windows.Point> points = new Dictionary<JointType, System.Windows.Point>();
+            Dictionary<JointType, Point3D> jointPoints = new Dictionary<JointType, Point3D>();
 
-            foreach (Joint joint in skeleton.Joints)
+            // For every joint that’s tracked, get the 2D projection point
+            foreach (JointType jointType in (JointType[])System.Enum.GetValues(typeof(JointType)))
             {
-                if (joint.TrackingState != JointTrackingState.NotTracked)
+                Point3D pt = skeleton.Get3D(jointType);
+                if (pt.X >= 0 && pt.Y >= 0)
                 {
-                    DepthImagePoint pt = mapper.MapSkeletonPointToDepthPoint(joint.Position, DepthImageFormat.Resolution640x480Fps30);
-                    points[joint.JointType] = new System.Windows.Point(pt.X, pt.Y);
+                    jointPoints[jointType] = pt;
 
-                    _jointDots[(int)joint.JointType].Visibility = Visibility.Visible;
-                    Canvas.SetLeft(_jointDots[(int)joint.JointType], pt.X - 5);
-                    Canvas.SetTop(_jointDots[(int)joint.JointType], pt.Y - 5);
+                    _jointDots[(int)jointType].Visibility = Visibility.Visible;
+                    Canvas.SetLeft(_jointDots[(int)jointType], pt.X - 5);
+                    Canvas.SetTop(_jointDots[(int)jointType], pt.Y - 5);
                 }
                 else
                 {
-                    _jointDots[(int)joint.JointType].Visibility = Visibility.Hidden;
+                    _jointDots[(int)jointType].Visibility = Visibility.Hidden;
                 }
             }
 
@@ -98,13 +100,13 @@ namespace EISKinectApp.view
             for (int i = 0; i < _bones.Length; i++)
             {
                 var bone = _bones[i];
-                if (points.ContainsKey(bone[0]) && points.ContainsKey(bone[1]))
+                if (jointPoints.ContainsKey(bone[0]) && jointPoints.ContainsKey(bone[1]))
                 {
                     _boneLines[i].Visibility = Visibility.Visible;
-                    _boneLines[i].X1 = points[bone[0]].X;
-                    _boneLines[i].Y1 = points[bone[0]].Y;
-                    _boneLines[i].X2 = points[bone[1]].X;
-                    _boneLines[i].Y2 = points[bone[1]].Y;
+                    _boneLines[i].X1 = jointPoints[bone[0]].X;
+                    _boneLines[i].Y1 = jointPoints[bone[0]].Y;
+                    _boneLines[i].X2 = jointPoints[bone[1]].X;
+                    _boneLines[i].Y2 = jointPoints[bone[1]].Y;
                 }
                 else
                 {

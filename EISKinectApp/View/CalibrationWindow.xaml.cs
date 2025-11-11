@@ -2,23 +2,20 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using Microsoft.Kinect;
-using EISKinectApp.model;
-using EISKinectApp.service;
+using EISKinectApp.Model;
 
 namespace EISKinectApp.view
 {
     public partial class CalibrationWindow
     {
-        private CallibrationWindowFloor _floorWindow;
-        private readonly KinectService _kinectService;
-        private readonly GestureDetector _gestureDetector;
-        private readonly CalibrationService _calibrationService;
-        private readonly CalibrationData _calibrationData;
-        private TrackedSkeleton _currentSkeleton;
+        private readonly CallibrationWindowFloor _floorWindow;
+        private readonly KinectManager _kinect;
+        private readonly KinectCalibrator _kinectCalibrator;
+        private bool _handsWereUp;
 
-        private int _currentCorner;
+        private KinectSkeleton _currentSkeleton;
 
-        private Ellipse[] _cornerEllipses;
+        private readonly Ellipse[] _cornerEllipses;
 
         public CalibrationWindow()
         {
@@ -27,16 +24,14 @@ namespace EISKinectApp.view
             _floorWindow = new CallibrationWindowFloor();
             _floorWindow.Show();
 
-            _kinectService = new KinectService();
-            _gestureDetector = new GestureDetector();
-            _calibrationData = new CalibrationData();
-            _calibrationService = new CalibrationService(_kinectService.Sensor, _calibrationData);
+            _kinect = KinectManager.Instance;
+            _kinectCalibrator = new KinectCalibrator(_kinect.Sensor);
 
             _cornerEllipses = new[] { Corner1, Corner2, Corner3, Corner4 };
 
-            _kinectService.DepthFrameReady += OnDepthFrame;
-            _kinectService.SkeletonUpdated += OnSkeletonUpdated;
-            _kinectService.Start();
+            _kinect.DepthFrameReady += OnDepthFrame;
+            _kinect.SkeletonReady += OnSkeletonUpdated;
+            _kinect.Start();
 
             StatusText.Text = "Stand in corner 1 and raise your hands to capture.";
             UpdateCornerMarkers();
@@ -48,36 +43,36 @@ namespace EISKinectApp.view
             DepthView.UpdateDepth(depthPixels);
         }
 
-        private void OnSkeletonUpdated(TrackedSkeleton tracked)
+        private void OnSkeletonUpdated(KinectSkeleton skeleton)
         {
-            _currentSkeleton = tracked;
+            _currentSkeleton = skeleton;
 
-            if (tracked.IsTracked)
-                SkeletonOverlay.UpdateSkeleton(tracked.Skeleton, _kinectService.Sensor.CoordinateMapper);
+            if (skeleton.IsTracked)
+                SkeletonOverlay.UpdateSkeleton(skeleton);
 
-            if (_gestureDetector.CheckCaptureGesture(tracked.Skeleton))
+            if (KinectGestureDetector.HandsRaisedAboveHead(skeleton)) {
+                _handsWereUp = true;
+            } else if (KinectGestureDetector.HandsLoweredBelowHead(skeleton) && _handsWereUp) {
                 CaptureCorner();
+            }
         }
 
         private void CaptureCorner()
         {
             if (_currentSkeleton == null || !_currentSkeleton.IsTracked) return;
+            
+            var hip = _currentSkeleton.GetRaw(JointType.HipCenter);
+            _kinectCalibrator.AddCorner(hip);
 
-            SkeletonPoint hip = _currentSkeleton.GetJointPosition(JointType.HipCenter);
-            Point[] corners = { new Point(0,0), new Point(640,0), new Point(640,480), new Point(0,480) };
-
-            _calibrationService.AddCorner(hip, corners[_currentCorner]);
-            _currentCorner++;
-
-            if (_currentCorner < 4)
+            if (_kinectCalibrator.CornersPending())
             {
-                StatusText.Text = $"Captured corner {_currentCorner}. Now stand in corner {_currentCorner + 1}.";
+                StatusText.Text = $"Captured corner {_kinectCalibrator.CurrentCorner}. Now stand in corner {_kinectCalibrator.CurrentCorner + 1}.";
             }
             else
             {
-                _calibrationService.Calibrate();
-                var trackingWindow = new TrackingTestWindow(_currentSkeleton, _calibrationService);
-                trackingWindow.Show();
+                _kinectCalibrator.Calibrate();
+                // var trackingWindow = new TrackingTestWindow(_currentSkeleton, _calibrationService);
+                // trackingWindow.Show();
                 _floorWindow.Hide();
                 Hide();
             }
@@ -89,11 +84,11 @@ namespace EISKinectApp.view
         {
             for (int i = 0; i < _cornerEllipses.Length; i++)
             {
-                _cornerEllipses[i].Stroke = i == _currentCorner ? Brushes.Yellow : Brushes.Gray;
-                _cornerEllipses[i].Fill = i < _calibrationData.SkeletonPoints.Count ? Brushes.Green : Brushes.Transparent;
+                _cornerEllipses[i].Stroke = i == _kinectCalibrator.CurrentCorner ? Brushes.Yellow : Brushes.Gray;
+                _cornerEllipses[i].Fill = i < _kinectCalibrator.CurrentCorner ? Brushes.Green : Brushes.Transparent;
             }
 
-            _floorWindow.HighlightCorner(_currentCorner);
+            _floorWindow.HighlightCorner(_kinectCalibrator.CurrentCorner);
         }
 
         private void CaptureButton_Click(object sender, RoutedEventArgs e)
@@ -104,7 +99,7 @@ namespace EISKinectApp.view
         protected override void OnClosed(System.EventArgs e)
         {
             base.OnClosed(e);
-            _kinectService.Stop();
+            _kinect.Stop();
         }
     }
 }
