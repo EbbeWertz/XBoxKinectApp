@@ -12,7 +12,9 @@ namespace EISKinectApp.model.KinectWrapper {
 
         // calibration
         private static int[] _floorDimensions = { 480, 640 };
-        private bool _isCalibrated;
+
+        public bool IsCalibrated { get; set; }
+        public int NextCornerToCalibrate => _calibratedProjector.CurrentPoint;
         private KinectSensor Sensor { get; }
         private readonly KinectCalibratedProjector _calibratedProjector;
 
@@ -27,7 +29,7 @@ namespace EISKinectApp.model.KinectWrapper {
 
 
         private KinectManager() {
-            _isCalibrated = false;
+            IsCalibrated = false;
             Sensor = KinectSensor.KinectSensors.FirstOrDefault(s => s.Status == KinectStatus.Connected)
                      ?? throw new InvalidOperationException("No Kinect connected!");
 
@@ -59,8 +61,8 @@ namespace EISKinectApp.model.KinectWrapper {
                 var skeletons = new Skeleton[frame.SkeletonArrayLength];
                 frame.CopySkeletonDataTo(skeletons);
                 var tracked = skeletons.FirstOrDefault(s => s.TrackingState == SkeletonTrackingState.Tracked);
-                if (tracked == null) return;
                 _currentRawSkeleton = tracked;
+                if (tracked == null) return;
                 SkeletonUpdated?.Invoke(new KinectSkeleton(tracked, _calibratedProjector, Sensor.CoordinateMapper));
             }
         }
@@ -79,7 +81,10 @@ namespace EISKinectApp.model.KinectWrapper {
             }
         }
 
-        public void RegisterCalibrationCorner() {
+        public bool RegisterCalibrationCorner() {
+            if (_currentRawSkeleton == null) {
+                return false;
+            }
             Point[] screenCorners = {
                 new Point(0,0),
                 new Point(_floorDimensions[0], 0),
@@ -89,9 +94,10 @@ namespace EISKinectApp.model.KinectWrapper {
              
             _calibratedProjector.RegisterCorner(_currentRawSkeleton.Joints[JointType.HipCenter].Position, screenCorners[_calibratedProjector.CurrentPoint]);
 
-            if (_calibratedProjector.CurrentPoint < 4) return;
+            if (_calibratedProjector.CurrentPoint < 4) return true;
             _calibratedProjector.Calibrate();
-            _isCalibrated = true;
+            IsCalibrated = true;
+            return true;
         }
     }
 }

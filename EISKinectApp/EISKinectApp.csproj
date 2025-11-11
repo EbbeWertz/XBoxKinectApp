@@ -72,14 +72,10 @@
     <ItemGroup>
         <Compile Include="Model\KinectWrapper\Calibration\PartialCalibrationClass.cs" />
         <Compile Include="Model\KinectWrapper\Calibration\Util.cs" />
+        <Compile Include="Model\KinectWrapper\KinectGestureDetector.cs" />
         <Compile Include="Model\KinectWrapper\KinectCalibratedProjector.cs" />
         <Compile Include="Model\KinectWrapper\KinectManager.cs" />
         <Compile Include="Model\KinectWrapper\KinectSkeleton.cs" />
-        <Compile Include="service\CallibrationService.cs" />
-        <Compile Include="service\GestureDetector.cs" />
-        <Compile Include="service\KinectService.cs" />
-        <Compile Include="Model\CallibrationData.cs" />
-        <Compile Include="Model\TrackedSkeleton.cs" />
         <Compile Include="View\App.xaml.cs">
           <DependentUpon>App.xaml</DependentUpon>
           <SubType>Code</SubType>

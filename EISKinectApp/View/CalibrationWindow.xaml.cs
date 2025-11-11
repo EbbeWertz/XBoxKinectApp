@@ -2,17 +2,15 @@ using System;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using Microsoft.Kinect;
-using EISKinectApp.model;
 using EISKinectApp.model.KinectWrapper;
-using EISKinectApp.service;
+using EISKinectApp.Model.KinectWrapper;
 
 namespace EISKinectApp.view {
     public partial class CalibrationWindow {
-        private CallibrationWindowFloor _floorWindow;
-        private KinectManager _kinect;
-
-        private Ellipse[] _cornerEllipses;
+        private readonly CallibrationWindowFloor _floorWindow;
+        private readonly KinectManager _kinect;
+        private readonly Ellipse[] _cornerEllipses;
+        private bool _handsWereDown = true;
 
         public CalibrationWindow() {
             InitializeComponent();
@@ -39,50 +37,46 @@ namespace EISKinectApp.view {
         private void OnSkeletonUpdated(KinectSkeleton skeleton) {
             SkeletonOverlay.UpdateSkeleton(skeleton);
 
-            // if (_gestureDetector.CheckCaptureGesture(tracked.Skeleton))
-            //     CaptureCorner();
+            switch (_handsWereDown) {
+                case true when KinectGestureDetector.HandsRaisedAboveHead(skeleton):
+                    CaptureCorner();
+                    _handsWereDown = false;
+                    break;
+                case false when KinectGestureDetector.HandsLoweredBelowHead(skeleton):
+                    _handsWereDown = true;
+                    break;
+            }
         }
 
         private void CaptureCorner() {
-            // if (_currentSkeleton == null || !_currentSkeleton.IsTracked) return;
-            //
-            // SkeletonPoint hip = _currentSkeleton.GetJointPosition(JointType.HipCenter);
-            // Point[] corners = { new Point(0,0), new Point(640,0), new Point(640,480), new Point(0,480) };
-            //
-            // _calibrationService.AddCorner(hip, corners[_currentCorner]);
-            // _currentCorner++;
-            //
-            // if (_currentCorner < 4)
-            // {
-            //     StatusText.Text = $"Captured corner {_currentCorner}. Now stand in corner {_currentCorner + 1}.";
-            // }
-            // else
-            // {
-            //     _calibrationService.Calibrate();
-            //     var gameWindow = new GameWindow();
-            //     gameWindow.Show();
-            //     _floorWindow.Hide();
-            //     Hide();
-            // }
-            //
-            // UpdateCornerMarkers();
+            var success = _kinect.RegisterCalibrationCorner();
+            if (!success) return;
+            if (_kinect.IsCalibrated) {
+                var gameWindow = new GameWindow();
+                gameWindow.Show();
+                _floorWindow.Hide();
+                Hide();
+            } else {
+                StatusText.Text = $"Captured corner {_kinect.NextCornerToCalibrate}. Now stand in corner {_kinect.NextCornerToCalibrate + 1}.";
+            }
+            UpdateCornerMarkers();
         }
 
         private void UpdateCornerMarkers() {
-            // for (int i = 0; i < _cornerEllipses.Length; i++)
-            // {
-            //     _cornerEllipses[i].Stroke = i == _currentCorner ? Brushes.Yellow : Brushes.Gray;
-            //     _cornerEllipses[i].Fill = i < _calibrationData.SkeletonPoints.Count ? Brushes.Green : Brushes.Transparent;
-            // }
-            //
-            // _floorWindow.HighlightCorner(_currentCorner);
+            for (var i = 0; i < _cornerEllipses.Length; i++)
+            {
+                _cornerEllipses[i].Stroke = i == _kinect.NextCornerToCalibrate ? Brushes.Yellow : Brushes.Gray;
+                _cornerEllipses[i].Fill = i < _kinect.NextCornerToCalibrate  ? Brushes.Green : Brushes.Transparent;
+            }
+            
+            _floorWindow.HighlightCorner(_kinect.NextCornerToCalibrate);
         }
 
         private void CaptureButton_Click(object sender, RoutedEventArgs e) {
             CaptureCorner();
         }
 
-        protected override void OnClosed(System.EventArgs e) {
+        protected override void OnClosed(EventArgs e) {
             base.OnClosed(e);
             _kinect.Stop();
             _floorWindow.Close();
