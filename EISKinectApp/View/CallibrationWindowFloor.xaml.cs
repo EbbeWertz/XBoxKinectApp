@@ -5,7 +5,7 @@ using System.Windows.Shapes;
 
 namespace EISKinectApp.view
 {
-    public partial class CallibrationWindowFloor : Window
+    public partial class CallibrationWindowFloor
     {
         private Ellipse[] _corners;
 
