@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
@@ -16,6 +17,12 @@ namespace EISKinectApp.view
 
             Loaded += (s, e) => UpdateCornerPositions();
             ProjectionBox.SizeChanged += (s, e) => UpdateCornerPositions();
+            
+            var screen = Screen.AllScreens.Length > 1 ? Screen.AllScreens[1] : Screen.PrimaryScreen;
+            WindowStartupLocation = WindowStartupLocation.Manual;
+            Left = screen.WorkingArea.Left;
+            Top = screen.WorkingArea.Top;
+            WindowState = WindowState.Maximized;
         }
 
         private void UpdateCornerPositions()

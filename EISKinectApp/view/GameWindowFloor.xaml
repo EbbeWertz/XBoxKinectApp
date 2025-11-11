@@ -1,0 +1,25 @@
+﻿<Window x:Class="EISKinectApp.view.GameWindowFloor"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:EISKinectApp.view"
+        mc:Ignorable="d"
+        Title="GameWindowFloor"
+        WindowState="Maximized"
+        Background="Black"
+        ResizeMode="CanResize"
+        WindowStartupLocation="Manual">
+    <Grid>
+        <Viewbox x:Name="ProjectionBox" Stretch="Uniform">
+            <Canvas x:Name="ProjectionCanvas" Width="640" Height="480" Background="Transparent">
+                <Rectangle x:Name="TopLeftRect" Width="320" Height="240" Fill="Red" Opacity="0.3" />
+                <Rectangle x:Name="TopRightRect" Width="320" Height="240" Fill="Green" Canvas.Left="320" Opacity="0.3" />
+                <Rectangle x:Name="BottomLeftRect" Width="320" Height="240" Fill="Blue" Canvas.Top="240" Opacity="0.3" />
+                <Rectangle x:Name="BottomRightRect" Width="320" Height="240" Fill="Yellow" Canvas.Left="320"
+                           Canvas.Top="240"
+                           Opacity="0.3" />
+            </Canvas>
+        </Viewbox>
+    </Grid>
+</Window>

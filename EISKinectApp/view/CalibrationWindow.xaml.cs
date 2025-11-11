@@ -76,8 +76,8 @@ namespace EISKinectApp.view
             else
             {
                 _calibrationService.Calibrate();
-                var trackingWindow = new TrackingTestWindow(_currentSkeleton, _calibrationService);
-                trackingWindow.Show();
+                var gameWindow = new GameWindow();
+                gameWindow.Show();
                 _floorWindow.Hide();
                 Hide();
             }
@@ -105,6 +105,7 @@ namespace EISKinectApp.view
         {
             base.OnClosed(e);
             _kinectService.Stop();
+            _floorWindow.Close();
         }
     }
 }
