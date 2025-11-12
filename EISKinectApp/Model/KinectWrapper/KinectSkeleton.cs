@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using Microsoft.Kinect;
 using Point = System.Windows.Point;
@@ -41,9 +40,9 @@ namespace EISKinectApp.model.KinectWrapper {
             _mapper = mapper;
         }
 
-        public PointF GetFrontViewInMeters(JointType joint) {
+        public Point GetFrontViewInMeters(JointType joint) {
             var j = _rawSkeleton.Joints[joint];
-            return new PointF(j.Position.X, j.Position.Y);
+            return new Point(j.Position.X, j.Position.Y);
         }
 
         public Point GetFrontViewInPixels(JointType joint) {

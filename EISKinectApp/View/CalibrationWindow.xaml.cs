@@ -41,9 +41,11 @@ namespace EISKinectApp.view {
                 case true when KinectGestureDetector.HandsRaisedAboveHead(skeleton):
                     CaptureCorner();
                     _handsWereDown = false;
+                    SkeletonOverlay.Color = Brushes.Yellow;
                     break;
                 case false when KinectGestureDetector.HandsLoweredBelowHead(skeleton):
                     _handsWereDown = true;
+                    SkeletonOverlay.Color = Brushes.LimeGreen;
                     break;
             }
         }
@@ -79,6 +81,8 @@ namespace EISKinectApp.view {
         protected override void OnClosed(EventArgs e) {
             base.OnClosed(e);
             _kinect.Stop();
+            _kinect.DepthFrameUpdated -= OnDepthFrameUpdated;
+            _kinect.SkeletonUpdated -= OnSkeletonUpdated;
             _floorWindow.Close();
         }
     }

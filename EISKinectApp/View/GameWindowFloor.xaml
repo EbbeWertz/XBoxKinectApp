@@ -13,12 +13,43 @@
     <Grid>
         <Viewbox x:Name="ProjectionBox" Stretch="Uniform">
             <Canvas x:Name="ProjectionCanvas" Width="640" Height="480" Background="Transparent">
-                <Rectangle x:Name="TopLeftRect" Width="320" Height="240" Fill="Red" Opacity="0.3" />
-                <Rectangle x:Name="TopRightRect" Width="320" Height="240" Fill="Green" Canvas.Left="320" Opacity="0.3" />
-                <Rectangle x:Name="BottomLeftRect" Width="320" Height="240" Fill="Blue" Canvas.Top="240" Opacity="0.3" />
-                <Rectangle x:Name="BottomRightRect" Width="320" Height="240" Fill="Yellow" Canvas.Left="320"
-                           Canvas.Top="240"
-                           Opacity="0.3" />
+                <Ellipse x:Name="CircleRed"
+                         Width="200" Height="200"
+                         StrokeThickness="6"
+                         Stroke="Gray"
+                         Fill="#800000"
+                />
+
+                <!-- Bottom-left (Blue) circle -->
+                <Ellipse x:Name="CircleBlue"
+                         Width="200" Height="200"
+                         StrokeThickness="6"
+                         Stroke="Gray"
+                         Fill="#000080"
+                />
+
+                <!-- Bottom-right (Yellow) circle -->
+                <Ellipse x:Name="CircleYellow"
+                         Width="200" Height="200"
+                         StrokeThickness="6"
+                         Stroke="Gray"
+                         Fill="#808000"
+                />
+                <!-- Left foot indicator -->
+                <Ellipse x:Name="FootLeft"
+                         Width="50" Height="80"
+                         Stroke="White"
+                         StrokeThickness="3"
+                         Fill="#40FFFFFF"
+                         Visibility="Hidden"/>
+
+                <!-- Right foot indicator -->
+                <Ellipse x:Name="FootRight"
+                         Width="50" Height="80"
+                         Stroke="White"
+                         StrokeThickness="3"
+                         Fill="#40FFFFFF"
+                         Visibility="Hidden"/>
             </Canvas>
         </Viewbox>
     </Grid>
