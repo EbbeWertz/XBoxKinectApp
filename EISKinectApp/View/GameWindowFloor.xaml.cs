@@ -6,7 +6,7 @@ using EISKinectApp.Model.Game;
 using EISKinectApp.model.KinectWrapper;
 using Microsoft.Kinect;
 
-namespace EISKinectApp.view {
+namespace EISKinectApp.View {
     public partial class GameWindowFloor : Window {
         private readonly GameFloor _gameFloor;
 

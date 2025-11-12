@@ -1,7 +1,7 @@
 ﻿using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace EISKinectApp.view
+namespace EISKinectApp.View
 {
     public partial class DepthCameraView
     {

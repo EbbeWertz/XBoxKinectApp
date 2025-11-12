@@ -4,9 +4,8 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using EISKinectApp.model.KinectWrapper;
 using EISKinectApp.Model.KinectWrapper;
-using EISKinectApp.View;
 
-namespace EISKinectApp.view {
+namespace EISKinectApp.View {
     public partial class CalibrationWindow {
         private readonly CallibrationWindowFloor _floorWindow;
         private readonly KinectManager _kinect;

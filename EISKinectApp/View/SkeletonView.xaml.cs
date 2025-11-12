@@ -5,7 +5,7 @@ using System.Windows;
 using EISKinectApp.model.KinectWrapper;
 using Microsoft.Kinect;
 
-namespace EISKinectApp.view {
+namespace EISKinectApp.View {
     public partial class SkeletonView {
         private readonly Ellipse[] _jointDots;
         private readonly Line[] _boneLinesOuter;

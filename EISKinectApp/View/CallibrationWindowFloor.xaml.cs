@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
-namespace EISKinectApp.view
+namespace EISKinectApp.View
 {
     public partial class CallibrationWindowFloor : Window
     {

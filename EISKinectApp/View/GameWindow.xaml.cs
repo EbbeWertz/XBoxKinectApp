@@ -7,7 +7,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using EISKinectApp.Model.Game;
 using EISKinectApp.model.KinectWrapper;
-using EISKinectApp.view;
 using Brushes = System.Windows.Media.Brushes;
 using Color = System.Windows.Media.Color;
 using Image = System.Windows.Controls.Image;
@@ -68,7 +67,9 @@ namespace EISKinectApp.View {
             CheckLine.Y2 = _checkLineY;
         }
 
-        private void OnSkeletonUpdated(KinectSkeleton skeleton) { }
+        private void OnSkeletonUpdated(KinectSkeleton skeleton) {
+            SkeletonOverlay.UpdateSkeleton(skeleton);
+        }
 
         private void SpawnGesture(object sender, EventArgs e) {
             var side = (ArmSide) _rand.Next(2);

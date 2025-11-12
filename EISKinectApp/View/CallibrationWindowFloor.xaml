@@ -1,4 +1,4 @@
-﻿<Window x:Class="EISKinectApp.view.CallibrationWindowFloor"
+﻿<Window x:Class="EISKinectApp.View.CallibrationWindowFloor"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Floor Projection"
