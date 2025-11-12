@@ -7,6 +7,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using EISKinectApp.Model.Game;
 using EISKinectApp.model.KinectWrapper;
+using EISKinectApp.Model.KinectWrapper;
 using EISKinectApp.view;
 using Brushes = System.Windows.Media.Brushes;
 using Color = System.Windows.Media.Color;
@@ -23,7 +24,8 @@ namespace EISKinectApp.View {
 
         // Kinect
         private readonly KinectManager _kinect;
-
+        private KinectSkeleton latestSkeleton;
+        
         public GameWindow() {
             InitializeComponent();
             GestureImageFactory.Initialize();
@@ -61,7 +63,10 @@ namespace EISKinectApp.View {
             CheckLine.Y2 = _checkLineY;
         }
 
-        private void OnSkeletonUpdated(KinectSkeleton skeleton) { }
+        private void OnSkeletonUpdated(KinectSkeleton skeleton)
+        {
+            latestSkeleton = skeleton;
+        }
 
         private void SpawnGesture() {
             var side = (ArmSide) _rand.Next(2);
@@ -95,7 +100,10 @@ namespace EISKinectApp.View {
                 if (!(GameCanvas.Children[i] is Image img) || !(img.Tag is GestureImageData data)) continue;
                 data.Y += _pxPerSecondFallSpeed; // snelheid
                 Canvas.SetTop(img, data.Y);
-                if (!(data.Y + img.Height >= _checkLineY)) continue;
+                if (!(data.Y + img.Height >= _checkLineY))
+                {
+                    KinectGestureDetector.CheckArmDanceMove(data.Gesture, data.Side, latestSkeleton);
+                }
                 GameCanvas.Children.RemoveAt(i);
             }
 
