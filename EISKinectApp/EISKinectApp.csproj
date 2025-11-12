@@ -90,6 +90,9 @@
         <Compile Include="View\DepthCameraView.xaml.cs">
           <DependentUpon>DepthCameraView.xaml</DependentUpon>
         </Compile>
+        <Compile Include="View\GameView.xaml.cs">
+          <DependentUpon>GameView.xaml</DependentUpon>
+        </Compile>
         <Compile Include="View\GameWindow.xaml.cs">
           <DependentUpon>GameWindow.xaml</DependentUpon>
         </Compile>
@@ -132,6 +135,7 @@
       </Page>
       <Page Include="View\CallibrationWindowFloor.xaml" />
       <Page Include="View\DepthCameraView.xaml" />
+      <Page Include="View\GameView.xaml" />
       <Page Include="View\GameWindow.xaml" />
       <Page Include="View\GameWindowFloor.xaml" />
       <Page Include="View\SkeletonView.xaml" />
@@ -139,6 +143,14 @@
     <ItemGroup>
       <Folder Include="Model\Game\" />
       <Folder Include="util\" />
+    </ItemGroup>
+    <ItemGroup>
+      <Content Include="Resources\Gestures\LeftArmDown.png" />
+      <Content Include="Resources\Gestures\LeftArmSide.png" />
+      <Content Include="Resources\Gestures\LeftArmUp.png" />
+      <Content Include="Resources\Gestures\RightArmDown.png" />
+      <Content Include="Resources\Gestures\RightArmSide.png" />
+      <Content Include="Resources\Gestures\RightArmUp.png" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
     <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
