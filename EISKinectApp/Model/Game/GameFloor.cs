@@ -10,6 +10,7 @@ namespace EISKinectApp.Model.Game {
         public static readonly int ColorCircleRadius = 120;
         public static readonly int Padding = 10;
         public static readonly SolidColorBrush[] CircleColors = { Brushes.Red, Brushes.Blue, Brushes.Yellow };
+        public int score = 0;
 
         public Point[] CircleCenters { get; }
 
@@ -68,6 +69,7 @@ namespace EISKinectApp.Model.Game {
         private SolidColorBrush MixColors(SolidColorBrush color1, SolidColorBrush color2) {
             if (color1 == null) return color2;
             if (color2 == null) return color1;
+            if(color1.Equals(color2)) return  color1;
             if (PairEquals(color1, color2, Brushes.Blue, Brushes.Red))
                 return Brushes.Purple;
             if (PairEquals(color1, color2, Brushes.Blue, Brushes.Yellow))
@@ -75,6 +77,14 @@ namespace EISKinectApp.Model.Game {
             if (PairEquals(color1, color2, Brushes.Yellow, Brushes.Red))
                 return Brushes.Orange;
             return null;
+        }
+
+        public int getScore() {
+            return score;
+        }
+
+        public void updateScore(int scoreToAdd) {
+            score += scoreToAdd;
         }
     }
 }

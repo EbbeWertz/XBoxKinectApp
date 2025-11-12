@@ -8,15 +8,14 @@ using Microsoft.Kinect;
 
 namespace EISKinectApp.View {
     public partial class GameWindowFloor : Window {
-        private readonly GameFloor _gameFloor;
 
-        public GameWindowFloor() {
+        private GameFloor _gameFloor;
+
+        public GameWindowFloor(GameFloor gameFloor) {
             InitializeComponent();
-            _gameFloor = new GameFloor();
+            _gameFloor = gameFloor;
             _circleViews = new[] { CircleRed, CircleBlue, CircleYellow };
             InitCircles();
-            _gameFloor.ColorStepUpdated += UpdateHighlights;
-            _gameFloor.FeetUpdated += UpdateFeet;
         }
 
         private readonly Ellipse[] _circleViews;
@@ -47,7 +46,7 @@ namespace EISKinectApp.View {
             }
         }
 
-        private void UpdateHighlights(int leftCircle, int rightCircle, SolidColorBrush totalColor) {
+        public void UpdateHighlights(int leftCircle, int rightCircle) {
             for (var i = 0; i < _circleViews.Length; i++) {
                 var active = (i == leftCircle || i == rightCircle);
                 _circleViews[i].Fill = active ? _lightColors[i] : _darkColors[i];
@@ -55,7 +54,7 @@ namespace EISKinectApp.View {
             }
         }
 
-        private void UpdateFeet(Point left, Point right) {
+        public void UpdateFeet(Point left, Point right) {
             var radius = FootLeft.Width / 2;
 
             Canvas.SetLeft(FootLeft, left.X - radius);
