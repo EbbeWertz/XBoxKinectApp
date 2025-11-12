@@ -70,7 +70,9 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Model\Game\ArmGestures.cs" />
         <Compile Include="Model\Game\GameFloor.cs" />
+        <Compile Include="Model\Game\GestureImageFactory.cs" />
         <Compile Include="Model\KinectWrapper\Calibration\PartialCalibrationClass.cs" />
         <Compile Include="Model\KinectWrapper\Calibration\Util.cs" />
         <Compile Include="Model\KinectWrapper\KinectGestureDetector.cs" />

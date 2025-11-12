@@ -1,29 +1,32 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.Windows.Threading;
-using EISKinectApp.Model.KinectWrapper; // jouw bestaande namespaces
+using EISKinectApp.Model.Game;
 using EISKinectApp.model.KinectWrapper;
 using EISKinectApp.view;
+using Brushes = System.Windows.Media.Brushes;
+using Color = System.Windows.Media.Color;
+using Image = System.Windows.Controls.Image;
 
-namespace EISKinectApp.View
-{
-    public partial class GameWindow : Window
-    {
+namespace EISKinectApp.View {
+    public partial class GameWindow : Window {
         private readonly DispatcherTimer _gameTimer;
         private readonly Random _rand = new Random();
         private double _checkLineY;
         private readonly GameWindowFloor _floorWindow;
+        private static readonly int ArmImageSize = 200;
+        private double _pxPerSecondFallSpeed = 5;
 
         // Kinect
         private readonly KinectManager _kinect;
-        private KinectSkeleton _latestSkeleton;
 
-        public GameWindow()
-        {
+        public GameWindow() {
             InitializeComponent();
+            GestureImageFactory.Initialize();
             _floorWindow = new GameWindowFloor();
             _floorWindow.Show();
 
@@ -36,32 +39,21 @@ namespace EISKinectApp.View
             _gameTimer = new DispatcherTimer();
             _gameTimer.Interval = TimeSpan.FromMilliseconds(30);
             _gameTimer.Tick += GameLoop;
-
-            Loaded += OnLoaded;
+            _gameTimer.Start();
             SizeChanged += OnSizeChanged;
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
-        {
-            PositionCheckLine();
-            _gameTimer.Start();
-            SpawnGesture();
-        }
-
-        protected override void OnClosed(System.EventArgs e)
-        {
+        protected override void OnClosed(System.EventArgs e) {
             base.OnClosed(e);
             _floorWindow.Close();
             _kinect.Stop();
         }
 
-        private void OnSizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            PositionCheckLine();
+        private void OnSizeChanged(object sender, SizeChangedEventArgs e) {
+            UpdateCheckLineSize();
         }
 
-        private void PositionCheckLine()
-        {
+        private void UpdateCheckLineSize() {
             _checkLineY = GameCanvas.ActualHeight * 0.9;
             CheckLine.X1 = 0;
             CheckLine.X2 = GameCanvas.ActualWidth;
@@ -69,102 +61,52 @@ namespace EISKinectApp.View
             CheckLine.Y2 = _checkLineY;
         }
 
-        private void OnSkeletonUpdated(KinectSkeleton skeleton)
-        {
-            _latestSkeleton = skeleton;
-        }
+        private void OnSkeletonUpdated(KinectSkeleton skeleton) { }
 
-        private void SpawnGesture()
-        {
-            // Alle gestures die je hebt gedefinieerd
-            var gestureTypes = new[]
-            {
-                "leftarmup", "leftarmdown", "leftarmside",
-                "rightarmup", "rightarmdown", "rightarmside"
+        private void SpawnGesture() {
+            var side = (ArmSide) _rand.Next(2);
+            var move = (ArmGesture) _rand.Next(3);
+
+            var leftOrRightName = side == ArmSide.Left ? "right" : "left"; // i know de file namen zijn omgedraaid ja
+            var moveName = move == ArmGesture.ArmDown ? "armdown" : move == ArmGesture.ArmUp ? "armup" : "armside";
+
+            var allColors = new []{
+                Brushes.Red, Brushes.Blue, Brushes.Yellow,
+                Brushes.Purple, Brushes.Green, Brushes.Orange,
+            };
+            var color = allColors[_rand.Next(6)];
+            
+            var img = new Image {
+                Width = ArmImageSize,
+                Height = ArmImageSize,
+                Source = GestureImageFactory.Get(leftOrRightName, moveName, color),
+                // Source = new BitmapImage(new Uri($"pack://application:,,,/resources/gestures/{leftOrRightName}{moveName}.png")),
+                Tag = new GestureImageData { Y = 0, Gesture = move, Side = side }
             };
 
-            var type = gestureTypes[_rand.Next(gestureTypes.Length)];
-
-            var img = new Image
-            {
-                Width = 169,
-                Height = 169,
-                Source = new BitmapImage(new Uri($"pack://application:,,,/resources/gestures/{type}.png")),
-                Tag = new GestureData { Y = 0, Type = type }
-            };
-
-            // Vaste x-positie per kant
-            double xPos;
-            if (type.StartsWith("right"))
-            {
-                xPos = 50; // linkerkant
-            }
-            else
-            {
-                xPos = GameCanvas.ActualWidth - 130; // rechterkant, 80 px breed + marge
-            }
-
+            var xPos = side == ArmSide.Left ? 50 : (int)GameCanvas.ActualWidth - 50 - ArmImageSize;
             Canvas.SetLeft(img, xPos);
             Canvas.SetTop(img, 0);
             GameCanvas.Children.Add(img);
         }
 
-        private void GameLoop(object sender, EventArgs e)
-        {
-            for (int i = GameCanvas.Children.Count - 1; i >= 0; i--)
-            {
-                if (GameCanvas.Children[i] is Image img && img.Tag is GestureData data)
-                {
-                    data.Y += 5; // snelheid
-                    Canvas.SetTop(img, data.Y);
-
-                    if (data.Y + img.Height >= _checkLineY)
-                    {
-                        CheckGesture(data.Type);
-                        GameCanvas.Children.RemoveAt(i);
-                    }
-                }
+        private void GameLoop(object sender, EventArgs e) {
+            for (var i = GameCanvas.Children.Count - 1; i >= 0; i--) {
+                if (!(GameCanvas.Children[i] is Image img) || !(img.Tag is GestureImageData data)) continue;
+                data.Y += _pxPerSecondFallSpeed; // snelheid
+                Canvas.SetTop(img, data.Y);
+                if (!(data.Y + img.Height >= _checkLineY)) continue;
+                GameCanvas.Children.RemoveAt(i);
             }
 
             if (_rand.NextDouble() < 0.02)
                 SpawnGesture();
         }
 
-        private void CheckGesture(string gestureType)
-        {
-            if (_latestSkeleton == null) return;
-
-            bool correct = false;
-
-            switch (gestureType)
-            {
-                case "LeftArmUp":
-                    correct = KinectGestureDetector.LeftArmUp(_latestSkeleton);
-                    break;
-                case "LeftArmDown":
-                    correct = KinectGestureDetector.LeftArmDown(_latestSkeleton);
-                    break;
-                case "LeftArmSide":
-                    correct = KinectGestureDetector.LeftArmSide(_latestSkeleton);
-                    break;
-                case "RightArmUp":
-                    correct = KinectGestureDetector.RightArmUp(_latestSkeleton);
-                    break;
-                case "RightArmDown":
-                    correct = KinectGestureDetector.RightArmDown(_latestSkeleton);
-                    break;
-                case "RightArmSide":
-                    correct = KinectGestureDetector.RightArmSide(_latestSkeleton);
-                    break;
-            }
-
-            StatusText.Text = correct ? $"✅ Correct: {gestureType}" : $"❌ Fout: {gestureType}";
-        }
-
-        private class GestureData
-        {
+        private class GestureImageData {
             public double Y { get; set; }
-            public string Type { get; set; }
+            public ArmGesture Gesture { get; set; }
+            public ArmSide Side { get; set; }
         }
     }
 }
