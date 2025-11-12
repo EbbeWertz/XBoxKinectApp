@@ -80,8 +80,7 @@ namespace EISKinectApp.View
             var gestureTypes = new[]
             {
                 "LeftArmUp", "LeftArmDown", "LeftArmSide",
-                "RightArmUp", "RightArmDown", "RightArmSide",
-                "BothArmsUp", "BothArmsDown", "BothArmsSide"
+                "RightArmUp", "RightArmDown", "RightArmSide"
             };
 
             var type = gestureTypes[_rand.Next(gestureTypes.Length)];
