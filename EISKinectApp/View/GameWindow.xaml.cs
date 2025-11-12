@@ -93,14 +93,18 @@ namespace EISKinectApp.View
                 Tag = new GestureData { Y = 0, Type = type }
             };
 
-            if (type[0] == 'l')
+            // Vaste x-positie per kant
+            double xPos;
+            if (type.StartsWith("left"))
             {
-                Canvas.SetLeft(img,20);
+                xPos = 50; // linkerkant
             }
             else
             {
-                Canvas.SetLeft(img,30);
+                xPos = GameCanvas.ActualWidth - 130; // rechterkant, 80 px breed + marge
             }
+
+            Canvas.SetLeft(img, xPos);
             Canvas.SetTop(img, 0);
             GameCanvas.Children.Add(img);
         }
