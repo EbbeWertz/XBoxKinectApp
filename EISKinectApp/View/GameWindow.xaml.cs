@@ -87,15 +87,15 @@ namespace EISKinectApp.View
 
             var img = new Image
             {
-                Width = 80,
-                Height = 80,
+                Width = 169,
+                Height = 169,
                 Source = new BitmapImage(new Uri($"pack://application:,,,/resources/gestures/{type}.png")),
                 Tag = new GestureData { Y = 0, Type = type }
             };
 
             // Vaste x-positie per kant
             double xPos;
-            if (type.StartsWith("left"))
+            if (type.StartsWith("right"))
             {
                 xPos = 50; // linkerkant
             }
