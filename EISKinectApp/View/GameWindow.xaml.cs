@@ -79,8 +79,8 @@ namespace EISKinectApp.View
             // Alle gestures die je hebt gedefinieerd
             var gestureTypes = new[]
             {
-                "LeftArmUp", "LeftArmDown", "LeftArmSide",
-                "RightArmUp", "RightArmDown", "RightArmSide"
+                "leftarmup", "leftarmdown", "leftarmside",
+                "rightarmup", "rightarmdown", "rightarmside"
             };
 
             var type = gestureTypes[_rand.Next(gestureTypes.Length)];
@@ -89,7 +89,7 @@ namespace EISKinectApp.View
             {
                 Width = 80,
                 Height = 80,
-                Source = new BitmapImage(new Uri($"pack://application:,,,/Resources/{type}.png")),
+                Source = new BitmapImage(new Uri($"pack://application:,,,/resources/gestures/{type}.png")),
                 Tag = new GestureData { Y = 0, Type = type }
             };
 

@@ -141,12 +141,12 @@
       <Folder Include="util\" />
     </ItemGroup>
     <ItemGroup>
-      <Content Include="Resources\Gestures\leftarmdown.png" />
-      <Content Include="Resources\Gestures\leftarmside.png" />
-      <Content Include="Resources\Gestures\leftarmup.png" />
-      <Content Include="Resources\Gestures\rightarmdown.png" />
-      <Content Include="Resources\Gestures\rightarmside.png" />
-      <Content Include="Resources\Gestures\rightarmup.png" />
+      <Resource Include="resources\gestures\leftarmdown.png" />
+      <Resource Include="resources\gestures\leftarmside.png" />
+      <Resource Include="resources\gestures\leftarmup.png" />
+      <Resource Include="resources\gestures\rightarmdown.png" />
+      <Resource Include="resources\gestures\rightarmside.png" />
+      <Resource Include="resources\gestures\rightarmup.png" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
     <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
