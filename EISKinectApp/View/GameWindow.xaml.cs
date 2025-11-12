@@ -89,11 +89,18 @@ namespace EISKinectApp.View
             {
                 Width = 80,
                 Height = 80,
-                Source = new BitmapImage(new Uri($"pack://application:,,,/Resources/{type}.png")),
+                Source = new BitmapImage(new Uri($"pack://application:,,,/Resources/Gestures/{type}.png")),
                 Tag = new GestureData { Y = 0, Type = type }
             };
 
-            Canvas.SetLeft(img, _rand.Next(50, (int)(GameCanvas.ActualWidth - 100)));
+            if (type[0] == 'l')
+            {
+                Canvas.SetLeft(img,20);
+            }
+            else
+            {
+                Canvas.SetLeft(img,30);
+            }
             Canvas.SetTop(img, 0);
             GameCanvas.Children.Add(img);
         }
