@@ -81,6 +81,8 @@ namespace EISKinectApp.view {
         protected override void OnClosed(EventArgs e) {
             base.OnClosed(e);
             _kinect.Stop();
+            _kinect.DepthFrameUpdated -= OnDepthFrameUpdated;
+            _kinect.SkeletonUpdated -= OnSkeletonUpdated;
             _floorWindow.Close();
         }
     }
