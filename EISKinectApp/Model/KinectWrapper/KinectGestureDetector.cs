@@ -52,7 +52,7 @@ namespace EISKinectApp.Model.KinectWrapper {
             var elbow = skeleton.GetFrontViewInMeters(JointType.ElbowLeft);
             var hand = skeleton.GetFrontViewInMeters(JointType.HandLeft);
 
-            return hand.Y > elbow.Y + 0.3 && elbow.Y < shoulder.Y + 0.1 && elbow.Y > shoulder.Y - 0.1;
+            return hand.Y > elbow.Y + 0.2 && elbow.Y < shoulder.Y + 0.1 && elbow.Y > shoulder.Y - 0.1;
         }
 
         // -----------------------------
@@ -73,7 +73,7 @@ namespace EISKinectApp.Model.KinectWrapper {
             var hand = skeleton.GetFrontViewInMeters(JointType.HandLeft);
             var elbow = skeleton.GetFrontViewInMeters(JointType.ElbowLeft);
 
-            return hand.Y < elbow.Y - 0.3 && elbow.Y < shoulder.Y + 0.1 && elbow.Y > shoulder.Y - 0.1;
+            return hand.Y < elbow.Y - 0.2 && elbow.Y < shoulder.Y + 0.1 && elbow.Y > shoulder.Y - 0.1;
         }
 
         // -----------------------------
@@ -84,7 +84,7 @@ namespace EISKinectApp.Model.KinectWrapper {
             var elbow = skeleton.GetFrontViewInMeters(JointType.ElbowRight);
             var hand = skeleton.GetFrontViewInMeters(JointType.HandRight);
 
-            return hand.Y > elbow.Y + 0.3 && elbow.Y < shoulder.Y + 0.1 && elbow.Y > shoulder.Y - 0.1;
+            return hand.Y > elbow.Y + 0.2 && elbow.Y < shoulder.Y + 0.1 && elbow.Y > shoulder.Y - 0.1;
         }
 
         // -----------------------------
@@ -105,7 +105,7 @@ namespace EISKinectApp.Model.KinectWrapper {
             var hand = skeleton.GetFrontViewInMeters(JointType.HandRight);
             var elbow = skeleton.GetFrontViewInMeters(JointType.ElbowRight);
 
-            return hand.Y < elbow.Y - 0.3 && elbow.Y < shoulder.Y + 0.1 && elbow.Y > shoulder.Y - 0.1;
+            return hand.Y < elbow.Y - 0.2 && elbow.Y < shoulder.Y + 0.1 && elbow.Y > shoulder.Y - 0.1;
         }
     }
 }
