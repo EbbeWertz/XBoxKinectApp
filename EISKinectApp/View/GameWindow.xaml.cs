@@ -7,8 +7,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using EISKinectApp.Model.Game;
 using EISKinectApp.model.KinectWrapper;
-using EISKinectApp.Model.KinectWrapper;
-using EISKinectApp.view;
 using Brushes = System.Windows.Media.Brushes;
 using Color = System.Windows.Media.Color;
 using Image = System.Windows.Controls.Image;
