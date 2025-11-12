@@ -70,6 +70,7 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Model\Game\GameFloor.cs" />
         <Compile Include="Model\KinectWrapper\Calibration\PartialCalibrationClass.cs" />
         <Compile Include="Model\KinectWrapper\Calibration\Util.cs" />
         <Compile Include="Model\KinectWrapper\KinectGestureDetector.cs" />
@@ -137,7 +138,6 @@
       <Page Include="View\SkeletonView.xaml" />
     </ItemGroup>
     <ItemGroup>
-      <Folder Include="Model\Game\" />
       <Folder Include="util\" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

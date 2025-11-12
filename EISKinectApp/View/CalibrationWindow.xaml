@@ -15,7 +15,7 @@
                 <view:DepthCameraView x:Name="DepthView" />
 
                 <!-- Skeleton overlay -->
-                <view:SkeletonView x:Name="SkeletonOverlay" />
+                <view:SkeletonView x:Name="SkeletonOverlay" Thick="false" Color="LimeGreen"/>
 
                 <!-- Corner hints -->
                 <Ellipse x:Name="Corner1" Width="20" Height="20" Stroke="Gray" StrokeThickness="3" Fill="Transparent"

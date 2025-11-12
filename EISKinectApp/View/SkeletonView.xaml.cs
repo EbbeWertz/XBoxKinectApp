@@ -5,52 +5,63 @@ using System.Windows;
 using EISKinectApp.model.KinectWrapper;
 using Microsoft.Kinect;
 
-namespace EISKinectApp.view
-{
-    public partial class SkeletonView
-    {
+namespace EISKinectApp.view {
+    public partial class SkeletonView {
         private readonly Ellipse[] _jointDots;
-        private readonly Line[] _boneLines;
+        private readonly Line[] _boneLinesOuter;
+        private readonly Line[] _boneLinesInner;
 
-        public SkeletonView()
-        {
+        public bool Thick { get; set; } = false;
+        public SolidColorBrush Color { get; set; } = Brushes.LimeGreen;
+
+        public SkeletonView() {
             InitializeComponent();
+
+            // All bones from KinectSkeleton definition
+            var allBones = KinectSkeleton.AllBones;
+            // Double the number of line objects (outer + inner)
+            _boneLinesOuter = new Line[allBones.Length];
+            _boneLinesInner = new Line[allBones.Length];
+
+            for (int i = 0; i < allBones.Length; i++) {
+                // Outer thick outline
+                _boneLinesOuter[i] = new Line {
+                    Stroke = Brushes.White, // Outline color
+                    StrokeThickness = 60, // Very thick
+                    StrokeStartLineCap = PenLineCap.Round,
+                    StrokeEndLineCap = PenLineCap.Round,
+                    Visibility = Visibility.Hidden
+                };
+                SkeletonCanvas.Children.Add(_boneLinesOuter[i]);
+            }
+
+            for (int i = 0; i < allBones.Length; i++) {
+                // Inner thinner bright line
+                _boneLinesInner[i] = new Line {
+                    Stroke = Color,
+                    StrokeThickness = Thick ? 50 : 5, // Slightly smaller
+                    StrokeStartLineCap = PenLineCap.Round,
+                    StrokeEndLineCap = PenLineCap.Round,
+                    Visibility = Visibility.Hidden
+                };
+                SkeletonCanvas.Children.Add(_boneLinesInner[i]);
+            }
 
             // All joints from Kinect enum
             var allJoints = (JointType[])System.Enum.GetValues(typeof(JointType));
             _jointDots = new Ellipse[allJoints.Length];
-
-            for (int i = 0; i < _jointDots.Length; i++)
-            {
-                _jointDots[i] = new Ellipse
-                {
+            for (int i = 0; i < _jointDots.Length; i++) {
+                _jointDots[i] = new Ellipse {
                     Width = 10,
                     Height = 10,
-                    Fill = Brushes.LimeGreen,
+                    Fill = allJoints[i] == JointType.HipCenter ? Brushes.Red : Color,
                     Visibility = Visibility.Hidden
                 };
                 SkeletonCanvas.Children.Add(_jointDots[i]);
             }
-
-            // All bones from KinectSkeleton definition
-            var allBones = KinectSkeleton.AllBones;
-            _boneLines = new Line[allBones.Length];
-
-            for (int i = 0; i < _boneLines.Length; i++)
-            {
-                _boneLines[i] = new Line
-                {
-                    Stroke = Brushes.Cyan,
-                    StrokeThickness = 4,
-                    Opacity = 0.7,
-                    Visibility = Visibility.Hidden
-                };
-                SkeletonCanvas.Children.Add(_boneLines[i]);
-            }
         }
 
-        public void UpdateSkeleton(KinectSkeleton skeleton)
-        {
+        public void UpdateSkeleton(KinectSkeleton skeleton) {
             if (skeleton == null)
                 return;
 
@@ -59,26 +70,42 @@ namespace EISKinectApp.view
 
             // --- Draw bones ---
             int i = 0;
-            foreach (var pair in boneDict)
-            {
+            foreach (var pair in boneDict) {
                 var (ptA, ptB) = pair.Value;
 
-                _boneLines[i].X1 = ptA.X;
-                _boneLines[i].Y1 = ptA.Y;
-                _boneLines[i].X2 = ptB.X;
-                _boneLines[i].Y2 = ptB.Y;
-                _boneLines[i].Visibility = Visibility.Visible;
+                if (Thick) {
+                    // Outer layer
+                    _boneLinesOuter[i].X1 = ptA.X;
+                    _boneLinesOuter[i].Y1 = ptA.Y;
+                    _boneLinesOuter[i].X2 = ptB.X;
+                    _boneLinesOuter[i].Y2 = ptB.Y;
+                    _boneLinesOuter[i].Visibility = Visibility.Visible;
+                }
+
+                // Inner layer
+                _boneLinesInner[i].X1 = ptA.X;
+                _boneLinesInner[i].Y1 = ptA.Y;
+                _boneLinesInner[i].X2 = ptB.X;
+                _boneLinesInner[i].Y2 = ptB.Y;
+                _boneLinesInner[i].Visibility = Visibility.Visible;
+                _boneLinesInner[i].StrokeThickness =  Thick ? 50 : 5;
+                _boneLinesInner[i].Stroke = Color;
+
                 i++;
             }
 
+
             // Hide any remaining lines (if fewer than expected)
-            for (; i < _boneLines.Length; i++)
-                _boneLines[i].Visibility = Visibility.Hidden;
+            for (int j = i; j < _boneLinesInner.Length; j++)
+                _boneLinesInner[j].Visibility = Visibility.Hidden;
+
+            for (int j = i; j < _boneLinesOuter.Length; j++)
+                _boneLinesOuter[j].Visibility = Visibility.Hidden;
 
             // --- Draw joints ---
+            if (Thick) return;
             var jointDict = skeleton.GetFullSkeletonJointsrontViewInPixels();
-            foreach (var pair in jointDict)
-            {
+            foreach (var pair in jointDict) {
                 var joint = pair.Key;
                 var pt = pair.Value;
 
