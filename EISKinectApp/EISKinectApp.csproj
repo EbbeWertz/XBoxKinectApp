@@ -91,9 +91,6 @@
         <Compile Include="View\DepthCameraView.xaml.cs">
           <DependentUpon>DepthCameraView.xaml</DependentUpon>
         </Compile>
-        <Compile Include="View\GameView.xaml.cs">
-          <DependentUpon>GameView.xaml</DependentUpon>
-        </Compile>
         <Compile Include="View\GameWindow.xaml.cs">
           <DependentUpon>GameWindow.xaml</DependentUpon>
         </Compile>
@@ -136,7 +133,6 @@
       </Page>
       <Page Include="View\CallibrationWindowFloor.xaml" />
       <Page Include="View\DepthCameraView.xaml" />
-      <Page Include="View\GameView.xaml" />
       <Page Include="View\GameWindow.xaml" />
       <Page Include="View\GameWindowFloor.xaml" />
       <Page Include="View\SkeletonView.xaml" />
