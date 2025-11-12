@@ -7,6 +7,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using EISKinectApp.Model.Game;
 using EISKinectApp.model.KinectWrapper;
+using EISKinectApp.Model.KinectWrapper;
+using EISKinectApp.view;
 using Brushes = System.Windows.Media.Brushes;
 using Color = System.Windows.Media.Color;
 using Image = System.Windows.Controls.Image;
@@ -23,7 +25,8 @@ namespace EISKinectApp.View {
 
         // Kinect
         private readonly KinectManager _kinect;
-
+        private KinectSkeleton latestSkeleton;
+        
         public GameWindow() {
             InitializeComponent();
             GestureImageFactory.Initialize();
@@ -69,6 +72,7 @@ namespace EISKinectApp.View {
 
         private void OnSkeletonUpdated(KinectSkeleton skeleton) {
             SkeletonOverlay.UpdateSkeleton(skeleton);
+            latestSkeleton = skeleton;
         }
 
         private void SpawnGesture(object sender, EventArgs e) {
