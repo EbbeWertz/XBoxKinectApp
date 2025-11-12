@@ -7,12 +7,15 @@ using Microsoft.Kinect;
 namespace EISKinectApp.Model.Game {
     public class GameFloor {
         private readonly KinectManager _kinect;
-        public static readonly int ColorCircleRadius = 100;
+        public static readonly int ColorCircleRadius = 120;
         public static readonly int Padding = 10;
         public static readonly SolidColorBrush[] CircleColors = { Brushes.Red, Brushes.Blue, Brushes.Yellow };
-        private readonly Point[] _circleCenters;
-        private readonly SolidColorBrush _lastColor;
+
+        public Point[] CircleCenters { get; }
+
+        private SolidColorBrush _lastColor;
         public event Action<int, int, SolidColorBrush> ColorStepUpdated;
+        public event Action<Point, Point> FeetUpdated;
 
         public GameFloor() {
             _kinect = KinectManager.Instance;
@@ -21,35 +24,39 @@ namespace EISKinectApp.Model.Game {
             var w = KinectManager.FloorDimensions[0];
             var h = KinectManager.FloorDimensions[1];
             var paddedRadius = ColorCircleRadius + Padding;
-            _circleCenters = new[] {
+            CircleCenters = new[] {
                 new Point(w / 2, paddedRadius),
                 new Point(paddedRadius, h - paddedRadius),
                 new Point(w - paddedRadius, h - paddedRadius),
             };
         }
-
+        
         private void OnSkeletonUpdated(KinectSkeleton skeleton) {
-            var leftFoot = skeleton.GetFloorInPixels(JointType.AnkleLeft);
-            var rightFoot = skeleton.GetFloorInPixels(JointType.AnkleRight);
+            var leftFoot = skeleton.GetFloorInPixels(JointType.FootLeft);
+            var rightFoot = skeleton.GetFloorInPixels(JointType.FootRight);
             var leftCircle = -1;
             var rightCircle = -1;
 
             for (var i = 0; i < 3; i++) {
-                if (IsInCircle(leftFoot, _circleCenters[i]))
+                if (IsInCircle(leftFoot, CircleCenters[i]))
                     leftCircle = i;
-                if (IsInCircle(rightFoot, _circleCenters[i]))
+                if (IsInCircle(rightFoot, CircleCenters[i]))
                     rightCircle = i;
             }
+            
+            FeetUpdated?.Invoke(leftFoot, rightFoot);
 
             var color = MixColors(leftCircle >= 0 ? CircleColors[leftCircle] : null, rightCircle >= 0 ? CircleColors[rightCircle] : null);
-            if (color != null && (_lastColor == null || !color.Equals(_lastColor)))
-                ColorStepUpdated?.Invoke(leftCircle, rightCircle, color);
+            if ((color == null || (_lastColor != null && color.Equals(_lastColor))) &&
+                (color != null || _lastColor == null)) return;
+            ColorStepUpdated?.Invoke(leftCircle, rightCircle, color);
+            _lastColor = color;
         }
 
         private static bool IsInCircle(Point floorPoint, Point center) {
             var xDist = (int)center.X - (int)floorPoint.X;
             var yDist = (int)center.Y - (int)floorPoint.Y;
-            return xDist << 1 + yDist << 1 < ColorCircleRadius << 1;
+            return xDist*xDist + yDist*yDist < ColorCircleRadius*ColorCircleRadius;
         }
 
         private static bool PairEquals(SolidColorBrush color1, SolidColorBrush color2, SolidColorBrush equalColor1,

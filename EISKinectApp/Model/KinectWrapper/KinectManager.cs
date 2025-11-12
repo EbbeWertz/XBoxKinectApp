@@ -11,7 +11,7 @@ namespace EISKinectApp.model.KinectWrapper {
         public static KinectManager Instance => _instance.Value;
 
         // calibration
-        public static readonly int[] FloorDimensions = { 480, 640 };
+        public static readonly int[] FloorDimensions = { 640, 480 };
 
         public bool IsCalibrated { get; set; }
         public int NextCornerToCalibrate => _calibratedProjector.CurrentPoint;
@@ -91,10 +91,12 @@ namespace EISKinectApp.model.KinectWrapper {
                 new Point(FloorDimensions[0], FloorDimensions[1]),
                 new Point(0,  FloorDimensions[1])
             };
-             
-            _calibratedProjector.RegisterCorner(_currentRawSkeleton.Joints[JointType.HipCenter].Position, screenCorners[_calibratedProjector.CurrentPoint]);
 
-            if (_calibratedProjector.CurrentPoint < 4) return true;
+            if (_calibratedProjector.CurrentPoint < 4) {
+                _calibratedProjector.RegisterCorner(_currentRawSkeleton.Joints[JointType.HipCenter].Position, screenCorners[_calibratedProjector.CurrentPoint]);
+            }
+
+            if (_calibratedProjector.CurrentPoint != 4) return true;
             _calibratedProjector.Calibrate();
             IsCalibrated = true;
             return true;
