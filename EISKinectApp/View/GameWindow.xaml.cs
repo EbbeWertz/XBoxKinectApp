@@ -15,11 +15,12 @@ using Image = System.Windows.Controls.Image;
 namespace EISKinectApp.View {
     public partial class GameWindow : Window {
         private readonly DispatcherTimer _gameTimer;
+        private readonly DispatcherTimer _spawnTimer;
         private readonly Random _rand = new Random();
         private double _checkLineY;
         private readonly GameWindowFloor _floorWindow;
         private static readonly int ArmImageSize = 200;
-        private double _pxPerSecondFallSpeed = 5;
+        private double _pxPerSecondFallSpeed = 2;
 
         // Kinect
         private readonly KinectManager _kinect;
@@ -40,6 +41,12 @@ namespace EISKinectApp.View {
             _gameTimer.Interval = TimeSpan.FromMilliseconds(30);
             _gameTimer.Tick += GameLoop;
             _gameTimer.Start();
+            
+            _spawnTimer = new DispatcherTimer();
+            _spawnTimer.Interval = TimeSpan.FromSeconds(2);
+            _spawnTimer.Tick += SpawnGesture;
+            _spawnTimer.Start();
+            
             SizeChanged += OnSizeChanged;
         }
 
@@ -54,7 +61,7 @@ namespace EISKinectApp.View {
         }
 
         private void UpdateCheckLineSize() {
-            _checkLineY = GameCanvas.ActualHeight * 0.9;
+            _checkLineY = GameCanvas.ActualHeight * 0.75;
             CheckLine.X1 = 0;
             CheckLine.X2 = GameCanvas.ActualWidth;
             CheckLine.Y1 = _checkLineY;
@@ -63,7 +70,7 @@ namespace EISKinectApp.View {
 
         private void OnSkeletonUpdated(KinectSkeleton skeleton) { }
 
-        private void SpawnGesture() {
+        private void SpawnGesture(object sender, EventArgs e) {
             var side = (ArmSide) _rand.Next(2);
             var move = (ArmGesture) _rand.Next(3);
 
@@ -95,12 +102,9 @@ namespace EISKinectApp.View {
                 if (!(GameCanvas.Children[i] is Image img) || !(img.Tag is GestureImageData data)) continue;
                 data.Y += _pxPerSecondFallSpeed; // snelheid
                 Canvas.SetTop(img, data.Y);
-                if (!(data.Y + img.Height >= _checkLineY)) continue;
+                if (!(data.Y + img.Height/2 >= _checkLineY)) continue;
                 GameCanvas.Children.RemoveAt(i);
             }
-
-            if (_rand.NextDouble() < 0.02)
-                SpawnGesture();
         }
 
         private class GestureImageData {
